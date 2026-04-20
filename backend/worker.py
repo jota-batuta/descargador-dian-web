@@ -41,7 +41,7 @@ async def _run_job(job: Job, token_url: str, loop: asyncio.AbstractEventLoop) ->
             asyncio.run_coroutine_threadsafe(
                 job.event_queue.put({"type": "error", "message": str(exc)}),
                 loop,
-            ).result(timeout=5)
+            ).result(timeout=30)
 
 
 def _run_sync(job: Job, token_url: str, loop: asyncio.AbstractEventLoop) -> None:
@@ -68,7 +68,7 @@ def _run_sync(job: Job, token_url: str, loop: asyncio.AbstractEventLoop) -> None
         asyncio.run_coroutine_threadsafe(
             job.event_queue.put(payload),
             loop,
-        ).result(timeout=5)
+        ).result(timeout=30)
 
     result = run_unattended(config, callback=callback)
 
@@ -80,7 +80,7 @@ def _run_sync(job: Job, token_url: str, loop: asyncio.AbstractEventLoop) -> None
         asyncio.run_coroutine_threadsafe(
             job.event_queue.put({"type": "job_done", **result, "zip_ready": True}),
             loop,
-        ).result(timeout=5)
+        ).result(timeout=30)
     else:
         job.status = JobStatus.failed
         job.error = result.get("status", "failed")
@@ -88,7 +88,7 @@ def _run_sync(job: Job, token_url: str, loop: asyncio.AbstractEventLoop) -> None
         asyncio.run_coroutine_threadsafe(
             job.event_queue.put({"type": "error", "message": "La descarga no pudo completarse", **result}),
             loop,
-        ).result(timeout=5)
+        ).result(timeout=30)
 
 
 def _insert_log(job: Job, pool) -> None:

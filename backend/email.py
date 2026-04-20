@@ -61,7 +61,7 @@ async def send_welcome(to: str, full_name: str, trial_days: int = 120) -> None:
         <li>Espera la descarga y guarda tu ZIP.</li>
       </ol>
       <div style="text-align:center;margin-top:28px">
-        <a href="https://dian.batutaai.com"
+        <a href="https://descargasdian.batutaai.com"
            style="background:#E94560;color:#fff;text-decoration:none;
                   padding:12px 32px;border-radius:8px;font-weight:700;font-size:1rem">
           Ir a la app

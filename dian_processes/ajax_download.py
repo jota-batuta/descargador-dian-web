@@ -12,9 +12,11 @@ from __future__ import annotations
 import os
 import re
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Callable, Optional
 
+import requests as _requests
 from playwright.sync_api import sync_playwright
 
 from dian_core.config import SessionConfig
@@ -128,20 +130,33 @@ def _safe_name(meta: dict, cufe: str, idx: int) -> str:
     return f"{safe}.zip"
 
 
-def _download_one(
-    request,
+def _make_http_session(playwright_page) -> _requests.Session:
+    """Build a requests.Session reusing Playwright's auth cookies."""
+    session = _requests.Session()
+    session.headers.update({
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
+        "Accept": "application/zip, application/octet-stream, */*",
+        "Referer": "https://catalogo-vpfe.dian.gov.co/Document/Received",
+    })
+    for c in playwright_page.context.cookies():
+        session.cookies.set(c["name"], c["value"], domain=c.get("domain", ""))
+    return session
+
+
+def _download_one_http(
+    http_session: _requests.Session,
     cufe: str,
     output_dir: str,
     meta: dict,
     idx: int,
 ) -> tuple[bool, Optional[str], str]:
-    """Descarga 1 ZIP. Devuelve (ok, error, filename)."""
+    """Descarga 1 ZIP via requests (thread-safe). Devuelve (ok, error, filename)."""
     url = DOWNLOAD_ENDPOINT.format(cufe=cufe)
     try:
-        resp = request.get(url, timeout=60_000)
+        resp = http_session.get(url, timeout=60, stream=True)
         if not resp.ok:
-            return False, f"HTTP {resp.status}", ""
-        body = resp.body()
+            return False, f"HTTP {resp.status_code}", ""
+        body = resp.content
         if not body or len(body) < 200:
             return False, f"respuesta vacía ({len(body)} bytes)", ""
         fname = _safe_name(meta, cufe, idx)
@@ -193,8 +208,7 @@ def run_ajax_download(
 
     cb(
         "status",
-        f"▶ AJAX download: {total} documentos secuencial (page.request no es "
-        "thread-safe; cada request tarda ~0.5 s).",
+        f"▶ AJAX download: {total} documentos con {workers} workers paralelos.",
     )
 
     counters = {"ok": 0, "err": 0}
@@ -208,39 +222,43 @@ def run_ajax_download(
             raise RuntimeError(f"AJAX download no pudo iniciar sesión: {e}") from e
 
         try:
-            request = session.page.request
-            for idx, (cufe, meta) in enumerate(cufes_meta):
-                ok, err, fname = _download_one(request, cufe, output_recibidos, meta, idx)
-                notify(cufe, ok, err)
-                if ok:
-                    counters["ok"] += 1
-                    cb("downloaded", f"  ok {fname[:80]}", filename=fname, cufe=cufe)
-                else:
-                    counters["err"] += 1
+            http_session = _make_http_session(session.page)
+
+            def _dl(args):
+                idx, cufe, meta = args
+                ok, err, fname = _download_one_http(http_session, cufe, output_recibidos, meta, idx)
+                return idx, cufe, ok, err, fname
+
+            with ThreadPoolExecutor(max_workers=workers) as executor:
+                futures = {
+                    executor.submit(_dl, (idx, cufe, meta)): cufe
+                    for idx, (cufe, meta) in enumerate(cufes_meta)
+                }
+                for fut in as_completed(futures):
+                    idx, cufe, ok, err, fname = fut.result()
+                    notify(cufe, ok, err)
+                    if ok:
+                        counters["ok"] += 1
+                        cb("downloaded", f"  ok {fname[:80]}", filename=fname, cufe=cufe)
+                    else:
+                        counters["err"] += 1
+                        cb("worker_log", f"  ✗ {cufe[:20]}: {err}", cufe=cufe, error=err or "")
+                    done = counters["ok"] + counters["err"]
                     cb(
-                        "worker_log",
-                        f"  ✗ fallo {cufe[:20]}: {err}",
-                        cufe=cufe, error=err or "",
-                    )
-                done = counters["ok"] + counters["err"]
-                # Fine-grained step progress on every doc (used by the UI
-                # progress bar). Summary log line only every 25 docs.
-                cb(
-                    "step",
-                    "",  # no log line — only the bar updates
-                    step=3, total_steps=3,
-                    step_name="Descargando documentos",
-                    current=done, total=total,
-                    percent=int(round(100 * done / max(1, total))),
-                    ok=counters["ok"], err=counters["err"],
-                )
-                if done % 25 == 0 or done == total:
-                    cb(
-                        "progress",
-                        f"AJAX dl: {done}/{total} (OK={counters['ok']}, err={counters['err']})",
+                        "step", "",
+                        step=3, total_steps=3,
+                        step_name="Descargando documentos",
                         current=done, total=total,
+                        percent=int(round(100 * done / max(1, total))),
                         ok=counters["ok"], err=counters["err"],
                     )
+                    if done % 25 == 0 or done == total:
+                        cb(
+                            "progress",
+                            f"AJAX dl: {done}/{total} (OK={counters['ok']}, err={counters['err']})",
+                            current=done, total=total,
+                            ok=counters["ok"], err=counters["err"],
+                        )
         finally:
             session.close()
 

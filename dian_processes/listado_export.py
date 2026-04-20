@@ -17,6 +17,7 @@ import zipfile
 from typing import Callable, Optional
 
 import openpyxl
+import requests
 from playwright.sync_api import sync_playwright
 
 from dian_core.config import ListadoExportConfig
@@ -223,9 +224,37 @@ class ListadoExporter:
                 zip_name = f"temp_listado_{int(time.time())}.zip"
                 zip_path = os.path.join(self.config.output_dir, zip_name)
 
-                # href="#" means JavaScript-driven download (likely window.open).
-                # Try to capture the popup page it opens; fall back to
-                # same-page expect_download (re-click is safe since href="#").
+                # DIAN's export download button uses href="#" + JS (window.open or
+                # XHR). Strategy: intercept the outgoing network request to capture
+                # the real download URL, then fetch with requests using session
+                # cookies. Fallback: popup capture via context.expect_page().
+                captured_urls: list[str] = []
+
+                def _intercept(route, request):
+                    url = request.url
+                    if any(x in url.lower() for x in ("download", ".zip", "getfile", "/export/")):
+                        captured_urls.append(url)
+                    route.continue_()
+
+                page.route("**/*", _intercept)
+                link.scroll_into_view_if_needed()
+                link.click()
+                time.sleep(6)
+                page.unroute("**/*", _intercept)
+
+                if captured_urls:
+                    self._status(f"URL de descarga capturada: {captured_urls[0][:80]}")
+                    cookies = {c["name"]: c["value"] for c in page.context.cookies()}
+                    headers = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120 Safari/537.36"}
+                    r = requests.get(captured_urls[0], cookies=cookies, headers=headers, timeout=120, stream=True)
+                    if r.ok:
+                        with open(zip_path, "wb") as f:
+                            for chunk in r.iter_content(8192):
+                                f.write(chunk)
+                        return self._process_zip(zip_path)
+                    self._status(f"requests falló HTTP {r.status_code}, intentando popup...")
+
+                # Fallback: try popup (window.open) then same-page download
                 try:
                     with page.context.expect_page(timeout=8000) as popup_info:
                         link.scroll_into_view_if_needed()
