@@ -28,6 +28,8 @@ pool: ConnectionPool = ConnectionPool(
     min_size=1,
     max_size=10,
     open=False,
+    reconnect_timeout=30,
+    reconnect_failed=None,
     kwargs={"autocommit": True},
 )
 
