@@ -1,4 +1,4 @@
-"""Apply the web_users table migration if it doesn't exist yet."""
+"""Apply schema migrations: web_users + download_log tables."""
 
 from __future__ import annotations
 
@@ -22,6 +22,26 @@ CREATE TABLE IF NOT EXISTS web_users (
 
 CREATE INDEX IF NOT EXISTS web_users_email_idx ON web_users (email);
 CREATE INDEX IF NOT EXISTS web_users_trial_idx  ON web_users (trial_expires);
+
+CREATE TABLE IF NOT EXISTS download_log (
+  id           BIGSERIAL    PRIMARY KEY,
+  user_email   CITEXT       NOT NULL REFERENCES web_users(email) ON DELETE CASCADE,
+  job_id       TEXT         NOT NULL,
+  start_date   DATE         NOT NULL,
+  end_date     DATE         NOT NULL,
+  empresa      TEXT,
+  total_docs   INT          DEFAULT 0,
+  ok_docs      INT          DEFAULT 0,
+  err_docs     INT          DEFAULT 0,
+  coverage_pct NUMERIC(5,2) DEFAULT 0,
+  duration_s   NUMERIC(8,2) DEFAULT 0,
+  status       TEXT         NOT NULL DEFAULT 'running',
+  started_at   TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+  finished_at  TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS dl_log_user_idx    ON download_log (user_email);
+CREATE INDEX IF NOT EXISTS dl_log_started_idx ON download_log (started_at DESC);
 """
 
 

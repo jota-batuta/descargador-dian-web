@@ -7,10 +7,7 @@ import os
 import tempfile
 from pathlib import Path
 
-from dian_core.config import SessionConfig, UnattendedConfig
-from dian_processes.unattended import run_unattended
-
-from backend.job_manager import Job, JobStatus, job_store
+from backend.job_manager import Job, JobStatus
 from backend.zip_packager import build_result_zip
 
 MAX_CONCURRENT = int(os.getenv("MAX_CONCURRENT", "4"))
@@ -27,7 +24,6 @@ def get_semaphore() -> asyncio.Semaphore:
 async def enqueue_job(job: Job, token_url: str) -> None:
     work_dir = Path(tempfile.mkdtemp(prefix=f"dian-{job.id[:8]}-"))
     job.work_dir = work_dir
-
     loop = asyncio.get_event_loop()
     asyncio.create_task(_run_job(job, token_url, loop))
 
@@ -41,6 +37,7 @@ async def _run_job(job: Job, token_url: str, loop: asyncio.AbstractEventLoop) ->
         except Exception as exc:
             job.status = JobStatus.failed
             job.error = str(exc)
+            _update_log(job, status="failed")
             asyncio.run_coroutine_threadsafe(
                 job.event_queue.put({"type": "error", "message": str(exc)}),
                 loop,
@@ -48,6 +45,10 @@ async def _run_job(job: Job, token_url: str, loop: asyncio.AbstractEventLoop) ->
 
 
 def _run_sync(job: Job, token_url: str, loop: asyncio.AbstractEventLoop) -> None:
+    from backend.db.pool import pool
+    from dian_core.config import SessionConfig, UnattendedConfig
+    from dian_processes.unattended import run_unattended
+
     start = job.start_date.replace("-", "/")
     end = job.end_date.replace("-", "/")
 
@@ -59,6 +60,8 @@ def _run_sync(job: Job, token_url: str, loop: asyncio.AbstractEventLoop) -> None
         output_recibidos=str(job.work_dir / "output_recibidos"),
         workers=int(os.getenv("AJAX_WORKERS", "4")),
     )
+
+    _insert_log(job, pool)
 
     def callback(event_type: str, message: str, **kwargs) -> None:
         payload = {"type": event_type, "message": message, **kwargs}
@@ -73,6 +76,7 @@ def _run_sync(job: Job, token_url: str, loop: asyncio.AbstractEventLoop) -> None
         zip_path = build_result_zip(job)
         job.result_zip = zip_path
         job.status = JobStatus.completed
+        _update_log(job, status="completed", result=result, pool=pool)
         asyncio.run_coroutine_threadsafe(
             job.event_queue.put({"type": "job_done", **result, "zip_ready": True}),
             loop,
@@ -80,7 +84,57 @@ def _run_sync(job: Job, token_url: str, loop: asyncio.AbstractEventLoop) -> None
     else:
         job.status = JobStatus.failed
         job.error = result.get("status", "failed")
+        _update_log(job, status="failed", result=result, pool=pool)
         asyncio.run_coroutine_threadsafe(
             job.event_queue.put({"type": "error", "message": "La descarga no pudo completarse", **result}),
             loop,
         ).result(timeout=5)
+
+
+def _insert_log(job: Job, pool) -> None:
+    try:
+        with pool.connection() as conn:
+            conn.execute(
+                """
+                INSERT INTO download_log
+                  (user_email, job_id, start_date, end_date, empresa, status)
+                VALUES (%s, %s, %s, %s, %s, 'running')
+                ON CONFLICT DO NOTHING
+                """,
+                (job.user_email, job.id, job.start_date, job.end_date, job.empresa),
+            )
+    except Exception:
+        pass  # log failure must not abort the download
+
+
+def _update_log(job: Job, status: str, result: dict | None = None, pool=None) -> None:
+    try:
+        if pool is None:
+            from backend.db.pool import pool as _pool
+            pool = _pool
+        r = result or {}
+        with pool.connection() as conn:
+            conn.execute(
+                """
+                UPDATE download_log SET
+                  status       = %s,
+                  total_docs   = %s,
+                  ok_docs      = %s,
+                  err_docs     = %s,
+                  coverage_pct = %s,
+                  duration_s   = %s,
+                  finished_at  = NOW()
+                WHERE job_id = %s
+                """,
+                (
+                    status,
+                    r.get("total", 0),
+                    r.get("ok", 0),
+                    r.get("err", 0),
+                    r.get("coverage_pct", 0),
+                    r.get("duration_s", 0),
+                    job.id,
+                ),
+            )
+    except Exception:
+        pass
