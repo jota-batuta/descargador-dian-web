@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iniciar sesión — Dian Downloader Batuta</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f0f2f5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,.10);
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 420px;
+    }
+    .brand {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .brand h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #111;
+      letter-spacing: -.5px;
+    }
+    .brand span { color: #E94560; }
+    label {
+      display: block;
+      font-size: .85rem;
+      font-weight: 600;
+      color: #444;
+      margin-bottom: 6px;
+      margin-top: 18px;
+    }
+    input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color .15s;
+      outline: none;
+    }
+    input:focus { border-color: #E94560; }
+    .btn {
+      display: block;
+      width: 100%;
+      margin-top: 28px;
+      padding: 12px;
+      background: #E94560;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .btn:hover { background: #c73550; }
+    .btn:disabled { background: #aaa; cursor: not-allowed; }
+    .footer-link {
+      text-align: center;
+      margin-top: 20px;
+      font-size: .87rem;
+      color: #666;
+    }
+    .footer-link a { color: #E94560; text-decoration: none; font-weight: 600; }
+    .error-msg {
+      background: #fff0f2;
+      border: 1.5px solid #E94560;
+      color: #c00;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: .88rem;
+      margin-top: 16px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="brand">
+      <h1>Dian Downloader <span>Batuta</span></h1>
+    </div>
+
+    <form id="loginForm">
+      <label for="email">Correo electrónico</label>
+      <input type="email" id="email" name="email" required autocomplete="email" placeholder="tu@empresa.com">
+
+      <label for="password">Contraseña</label>
+      <input type="password" id="password" name="password" required placeholder="••••••••">
+
+      <button class="btn" type="submit" id="submitBtn">Iniciar sesión</button>
+    </form>
+
+    <div class="error-msg" id="errorMsg"></div>
+
+    <p class="footer-link">¿Aún no tienes cuenta? <a href="/register.html">Regístrate gratis</a></p>
+  </div>
+
+  <script>
+    const form = document.getElementById('loginForm');
+    const errorMsg = document.getElementById('errorMsg');
+    const submitBtn = document.getElementById('submitBtn');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorMsg.style.display = 'none';
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Ingresando...';
+
+      const data = new FormData(form);
+      try {
+        const res = await fetch('/auth/login', { method: 'POST', body: data });
+        if (res.redirected) {
+          window.location.href = res.url;
+          return;
+        }
+        if (res.ok) {
+          window.location.href = '/app.html';
+          return;
+        }
+        const body = await res.json().catch(() => ({}));
+        const msg = body.detail || 'Error al iniciar sesión';
+        if (res.status === 403) {
+          errorMsg.textContent = 'Tu período de prueba ha expirado. Contacta a Batuta AI para renovar.';
+        } else {
+          errorMsg.textContent = msg;
+        }
+        errorMsg.style.display = 'block';
+      } catch {
+        errorMsg.textContent = 'Error de conexión. Intenta de nuevo.';
+        errorMsg.style.display = 'block';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Iniciar sesión';
+      }
+    });
+  </script>
+</body>
+</html>

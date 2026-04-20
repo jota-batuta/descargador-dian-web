@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Descargar — Dian Downloader Batuta</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f0f2f5;
+      min-height: 100vh;
+    }
+    header {
+      background: #fff;
+      border-bottom: 1.5px solid #e5e7eb;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+    .brand { font-size: 1.1rem; font-weight: 700; color: #111; }
+    .brand span { color: #E94560; }
+    .user-info { display: flex; align-items: center; gap: 20px; font-size: .87rem; color: #555; }
+    .user-info strong { color: #111; }
+    .trial-chip {
+      background: #fff0f2; color: #E94560; font-weight: 700;
+      padding: 3px 10px; border-radius: 99px; font-size: .78rem;
+      border: 1.5px solid #E94560;
+    }
+    .logout-btn {
+      background: none; border: 1.5px solid #d1d5db; color: #555;
+      padding: 5px 14px; border-radius: 8px; cursor: pointer; font-size: .85rem;
+      transition: border-color .15s;
+    }
+    .logout-btn:hover { border-color: #E94560; color: #E94560; }
+
+    main {
+      max-width: 560px;
+      margin: 40px auto;
+      padding: 0 16px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,.08);
+      padding: 36px;
+    }
+    .card h2 { font-size: 1.15rem; font-weight: 700; margin-bottom: 24px; color: #111; }
+
+    label { display: block; font-size: .85rem; font-weight: 600; color: #444; margin-bottom: 6px; margin-top: 18px; }
+    label:first-child { margin-top: 0; }
+    input, textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid #d1d5db;
+      border-radius: 8px;
+      font-size: .95rem;
+      transition: border-color .15s;
+      outline: none;
+      font-family: inherit;
+    }
+    input:focus, textarea:focus { border-color: #E94560; }
+    textarea { resize: vertical; min-height: 70px; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    .hint { font-size: .78rem; color: #888; margin-top: 4px; }
+
+    .btn-primary {
+      display: block; width: 100%; margin-top: 28px; padding: 13px;
+      background: #E94560; color: #fff; font-size: 1rem; font-weight: 700;
+      border: none; border-radius: 8px; cursor: pointer; transition: background .15s;
+    }
+    .btn-primary:hover { background: #c73550; }
+    .btn-primary:disabled { background: #aaa; cursor: not-allowed; }
+
+    /* Progress section */
+    #progressSection { margin-top: 28px; display: none; }
+    .step-label {
+      font-size: .88rem; font-weight: 600; color: #555; margin-bottom: 10px;
+    }
+    .progress-bar-wrap {
+      background: #e5e7eb; border-radius: 99px; height: 10px; overflow: hidden;
+    }
+    .progress-bar-fill {
+      background: #E94560; height: 100%; width: 0%; border-radius: 99px;
+      transition: width .4s ease;
+    }
+    .progress-counts {
+      font-size: .82rem; color: #666; margin-top: 8px;
+    }
+    .log-box {
+      margin-top: 14px;
+      background: #f8f9fa;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: .8rem;
+      color: #444;
+      max-height: 160px;
+      overflow-y: auto;
+      font-family: 'Consolas', monospace;
+    }
+
+    /* Download button */
+    #downloadSection { margin-top: 24px; display: none; text-align: center; }
+    .btn-download {
+      display: inline-block; padding: 13px 36px;
+      background: #16a34a; color: #fff; font-size: 1rem; font-weight: 700;
+      border: none; border-radius: 8px; cursor: pointer; transition: background .15s;
+      text-decoration: none;
+    }
+    .btn-download:hover { background: #15803d; }
+    .success-msg { font-size: .88rem; color: #16a34a; font-weight: 600; margin-bottom: 12px; }
+
+    /* Error */
+    .error-msg {
+      background: #fff0f2; border: 1.5px solid #E94560; color: #c00;
+      border-radius: 8px; padding: 10px 14px; font-size: .88rem; margin-top: 16px; display: none;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <span class="brand">Dian Downloader <span>Batuta</span></span>
+  <div class="user-info">
+    <span>Hola, <strong id="userName">...</strong></span>
+    <span class="trial-chip" id="trialDays">...</span>
+    <form action="/auth/logout" method="post" style="margin:0">
+      <button class="logout-btn" type="submit">Cerrar sesión</button>
+    </form>
+  </div>
+</header>
+
+<main>
+  <div class="card">
+    <h2>Nueva descarga de documentos DIAN</h2>
+
+    <form id="jobForm">
+      <label for="token_url">Token URL del portal DIAN</label>
+      <textarea id="token_url" name="token_url" required rows="2"
+        placeholder="https://catalogo-vpfe.dian.gov.co/...?token=..."></textarea>
+      <p class="hint">Copia el token desde tu sesión activa del portal DIAN. Vigencia ~60 min.</p>
+
+      <div class="row">
+        <div>
+          <label for="start_date">Fecha inicio</label>
+          <input type="date" id="start_date" name="start_date" required>
+        </div>
+        <div>
+          <label for="end_date">Fecha fin</label>
+          <input type="date" id="end_date" name="end_date" required>
+        </div>
+      </div>
+
+      <label for="empresa">Empresa (opcional)</label>
+      <input type="text" id="empresa" name="empresa" placeholder="Mi Empresa SAS">
+      <p class="hint">Se usará como nombre del archivo ZIP resultante.</p>
+
+      <button class="btn-primary" type="submit" id="startBtn">Iniciar descarga</button>
+    </form>
+
+    <div class="error-msg" id="errorMsg"></div>
+
+    <div id="progressSection">
+      <div class="step-label" id="stepLabel">Iniciando...</div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progressFill"></div>
+      </div>
+      <div class="progress-counts" id="progressCounts"></div>
+      <div class="log-box" id="logBox"></div>
+    </div>
+
+    <div id="downloadSection">
+      <p class="success-msg" id="successMsg"></p>
+      <a class="btn-download" id="downloadBtn" href="#">Descargar ZIP</a>
+    </div>
+  </div>
+</main>
+
+<script>
+  // Load user info
+  fetch('/auth/me').then(r => {
+    if (r.status === 302 || r.status === 401 || r.status === 403) {
+      window.location.href = '/login.html';
+      return;
+    }
+    return r.json();
+  }).then(u => {
+    if (!u) return;
+    document.getElementById('userName').textContent = u.full_name;
+    document.getElementById('trialDays').textContent = `Trial: ${u.days_remaining} días`;
+  }).catch(() => { window.location.href = '/login.html'; });
+
+  // Set default dates (current month)
+  const today = new Date();
+  const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+  document.getElementById('end_date').value = today.toISOString().slice(0, 10);
+  document.getElementById('start_date').value = firstDay.toISOString().slice(0, 10);
+
+  const form = document.getElementById('jobForm');
+  const startBtn = document.getElementById('startBtn');
+  const errorMsg = document.getElementById('errorMsg');
+  const progressSection = document.getElementById('progressSection');
+  const downloadSection = document.getElementById('downloadSection');
+  const logBox = document.getElementById('logBox');
+
+  function addLog(msg) {
+    const line = document.createElement('div');
+    line.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+    logBox.appendChild(line);
+    logBox.scrollTop = logBox.scrollHeight;
+  }
+
+  function setProgress(pct, label, counts) {
+    document.getElementById('progressFill').style.width = pct + '%';
+    if (label) document.getElementById('stepLabel').textContent = label;
+    if (counts) document.getElementById('progressCounts').textContent = counts;
+  }
+
+  let currentJobId = null;
+  let eventSource = null;
+
+  function startSSE(jobId) {
+    if (eventSource) eventSource.close();
+    eventSource = new EventSource(`/api/jobs/${jobId}/stream`);
+
+    eventSource.addEventListener('status', (e) => {
+      const data = JSON.parse(e.data);
+      addLog(data.message);
+    });
+
+    eventSource.addEventListener('step', (e) => {
+      const d = JSON.parse(e.data);
+      const pct = d.percent ?? Math.round((d.step / d.total_steps) * 100);
+      setProgress(pct, `Paso ${d.step} de ${d.total_steps}: ${d.step_name || ''}`, '');
+      addLog(d.message);
+    });
+
+    eventSource.addEventListener('progress', (e) => {
+      const d = JSON.parse(e.data);
+      if (d.current !== undefined && d.total) {
+        const pct = Math.round((d.current / d.total) * 100);
+        setProgress(pct, null, `Descargado: ${d.current} / ${d.total} documentos`);
+      }
+    });
+
+    eventSource.addEventListener('downloaded', (e) => {
+      const d = JSON.parse(e.data);
+      addLog(`✓ ${d.message}`);
+    });
+
+    eventSource.addEventListener('worker_log', (e) => {
+      const d = JSON.parse(e.data);
+      addLog(`⚠ ${d.message}`);
+    });
+
+    eventSource.addEventListener('job_done', (e) => {
+      const d = JSON.parse(e.data);
+      eventSource.close();
+      startBtn.disabled = false;
+      startBtn.textContent = 'Iniciar descarga';
+      setProgress(100, 'Completado', `Total: ${d.total ?? '-'} · OK: ${d.ok ?? '-'} · Error: ${d.err ?? '-'}`);
+      addLog(`Descarga finalizada. Cobertura: ${d.coverage_pct ?? '?'}%`);
+      progressSection.style.display = 'block';
+      downloadSection.style.display = 'block';
+      document.getElementById('successMsg').textContent =
+        `¡Listo! ${d.ok ?? ''} documentos descargados. Haz clic para guardar el ZIP.`;
+      document.getElementById('downloadBtn').href = `/api/jobs/${jobId}/download`;
+    });
+
+    eventSource.addEventListener('error', (e) => {
+      let msg = 'Error durante la descarga.';
+      try { msg = JSON.parse(e.data).message || msg; } catch {}
+      eventSource.close();
+      startBtn.disabled = false;
+      startBtn.textContent = 'Iniciar descarga';
+      addLog(`✗ ${msg}`);
+      errorMsg.textContent = msg;
+      errorMsg.style.display = 'block';
+    });
+
+    eventSource.onerror = () => {
+      addLog('Conexión perdida con el servidor.');
+    };
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorMsg.style.display = 'none';
+    downloadSection.style.display = 'none';
+    logBox.innerHTML = '';
+
+    startBtn.disabled = true;
+    startBtn.textContent = 'Enviando...';
+    progressSection.style.display = 'block';
+    setProgress(0, 'Enviando solicitud...', '');
+
+    const data = new FormData(form);
+    try {
+      const res = await fetch('/api/jobs', { method: 'POST', body: data });
+      if (res.status === 302 || res.status === 401) { window.location.href = '/login.html'; return; }
+      if (res.status === 403) {
+        const b = await res.json().catch(() => ({}));
+        if (b.detail === 'trial_expired') { window.location.href = '/login.html'; return; }
+      }
+      if (!res.ok) {
+        const b = await res.json().catch(() => ({}));
+        throw new Error(b.detail || `Error ${res.status}`);
+      }
+      const { job_id } = await res.json();
+      currentJobId = job_id;
+      startBtn.textContent = 'Descargando...';
+      setProgress(2, 'Trabajo en cola...', '');
+      addLog('Trabajo creado. Esperando worker...');
+      startSSE(job_id);
+    } catch (err) {
+      errorMsg.textContent = err.message || 'Error al iniciar la descarga.';
+      errorMsg.style.display = 'block';
+      startBtn.disabled = false;
+      startBtn.textContent = 'Iniciar descarga';
+      progressSection.style.display = 'none';
+    }
+  });
+</script>
+</body>
+</html>
