@@ -49,9 +49,12 @@ class DianSession:
         Returns:
             self, para permitir chaining.
         """
+        import os
         emit = on_progress or (lambda _m: None)
         emit("Iniciando navegador Chromium (headless)...")
-        self.browser = playwright.chromium.launch(headless=self.config.headless)
+        # --no-sandbox is required in Docker/Linux containers without SYS_ADMIN capability
+        _args = ["--no-sandbox", "--disable-setuid-sandbox"] if os.getenv("PLAYWRIGHT_NO_SANDBOX") else []
+        self.browser = playwright.chromium.launch(headless=self.config.headless, args=_args)
         emit("Creando contexto de navegación...")
         self.context = self.browser.new_context(accept_downloads=True)
         self.page = self.context.new_page()
