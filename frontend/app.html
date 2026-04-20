@@ -120,6 +120,66 @@
       background: #fff0f2; border: 1.5px solid #E94560; color: #c00;
       border-radius: 8px; padding: 10px 14px; font-size: .88rem; margin-top: 16px; display: none;
     }
+
+    /* Help toggle button */
+    .help-toggle {
+      background: none; border: 1px solid #d1d5db; color: #E94560;
+      font-size: .73rem; font-weight: 600; padding: 2px 8px; border-radius: 6px;
+      cursor: pointer; margin-left: 8px; vertical-align: middle;
+      transition: background .15s, color .15s;
+    }
+    .help-toggle:hover { background: #fff0f2; border-color: #E94560; }
+
+    /* Contextual guide */
+    .token-guide {
+      background: #f8f9fa; border: 1.5px solid #e5e7eb;
+      border-radius: 10px; padding: 16px 18px; margin-bottom: 10px;
+    }
+    .guide-title { font-size: .88rem; font-weight: 700; color: #111; margin-bottom: 10px; }
+    .guide-steps { padding-left: 18px; font-size: .82rem; color: #444; }
+    .guide-steps li { margin-bottom: 5px; line-height: 1.5; }
+
+    /* Email mockup illustration */
+    .guide-illustration { margin: 14px 0 10px; }
+    .email-mockup {
+      background: #fff; border: 1.5px solid #d1d5db; border-radius: 8px;
+      overflow: hidden; font-size: .78rem;
+    }
+    .email-meta {
+      background: #f3f4f6; border-bottom: 1px solid #e5e7eb;
+      padding: 7px 12px; display: flex; flex-direction: column; gap: 2px;
+    }
+    .email-from { color: #555; }
+    .email-subject { font-weight: 700; color: #111; }
+    .email-body { padding: 12px; position: relative; }
+
+    .btn-green-wrap { position: relative; display: inline-block; }
+    .btn-green {
+      display: inline-block; background: #16a34a; color: #fff;
+      font-size: .8rem; font-weight: 700; padding: 7px 18px;
+      border-radius: 6px; cursor: default;
+    }
+    .context-menu {
+      position: absolute; top: 100%; left: 0; margin-top: 4px;
+      background: #fff; border: 1px solid #d1d5db; border-radius: 6px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.15); z-index: 10; min-width: 200px;
+      overflow: hidden;
+    }
+    .ctx-item {
+      padding: 6px 14px; font-size: .78rem; color: #333;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    .ctx-item:last-child { border-bottom: none; }
+    .ctx-divider { border-top: 1px solid #e5e7eb; }
+    .ctx-highlight {
+      background: #dbeafe; color: #1d4ed8; font-weight: 700;
+    }
+
+    .guide-warning {
+      font-size: .78rem; color: #b45309; background: #fffbeb;
+      border: 1px solid #fcd34d; border-radius: 6px;
+      padding: 6px 10px; margin-top: 10px;
+    }
   </style>
 </head>
 <body>
@@ -140,10 +200,53 @@
     <h2>Nueva descarga de documentos DIAN</h2>
 
     <form id="jobForm">
-      <label for="token_url">Token URL del portal DIAN</label>
+      <label for="token_url">
+        Token URL del portal DIAN
+        <button type="button" class="help-toggle" onclick="toggleGuide()" id="helpBtn">
+          ¿Cómo obtenerlo?
+        </button>
+      </label>
+
+      <!-- Guía contextual -->
+      <div id="tokenGuide" class="token-guide" style="display:none">
+        <p class="guide-title">Cómo obtener tu Token URL</p>
+        <ol class="guide-steps">
+          <li>Abre el correo electrónico que DIAN te envió con tu token de acceso.</li>
+          <li>Busca el botón verde <strong>"Ingrese aquí"</strong>.</li>
+          <li><strong>Haz clic derecho</strong> sobre ese botón y selecciona <strong>"Copiar enlace"</strong> (Copy link).</li>
+          <li>Pega el enlace copiado en el campo de abajo.</li>
+        </ol>
+        <!-- Ilustración del paso clave -->
+        <div class="guide-illustration">
+          <div class="email-mockup">
+            <div class="email-meta">
+              <span class="email-from">DIAN &lt;notificaciones@dian.gov.co&gt;</span>
+              <span class="email-subject">Token Acceso Portal VPFE</span>
+            </div>
+            <div class="email-body">
+              <p style="font-size:.82rem;color:#444;margin-bottom:12px">
+                Estimado(a),<br>Se ha generado un token de acceso. Acceda a la plataforma:
+              </p>
+              <div class="btn-green-wrap">
+                <span class="btn-green">Ingrese aquí</span>
+                <div class="context-menu">
+                  <div class="ctx-item">Abrir enlace en nueva pestaña</div>
+                  <div class="ctx-item">Abrir enlace en nueva ventana</div>
+                  <div class="ctx-item ctx-divider">Guardar enlace como...</div>
+                  <div class="ctx-item ctx-highlight">&#x2713; Copiar enlace</div>
+                  <div class="ctx-item">Inspeccionar</div>
+                </div>
+              </div>
+              <p style="font-size:.75rem;color:#888;margin-top:10px">Haz clic derecho sobre el botón verde → "Copiar enlace"</p>
+            </div>
+          </div>
+        </div>
+        <p class="guide-warning">⚠ El token caduca en ~60 minutos. Si expira, solicita uno nuevo a DIAN y pégalo aquí.</p>
+      </div>
+
       <textarea id="token_url" name="token_url" required rows="2"
         placeholder="https://catalogo-vpfe.dian.gov.co/...?token=..."></textarea>
-      <p class="hint">Copia el token desde tu sesión activa del portal DIAN. Vigencia ~60 min.</p>
+      <p class="hint">Copia el token desde tu correo DIAN. Vigencia ~60 min.</p>
 
       <div class="row">
         <div>
@@ -182,6 +285,14 @@
 </main>
 
 <script>
+  function toggleGuide() {
+    const guide = document.getElementById('tokenGuide');
+    const btn = document.getElementById('helpBtn');
+    const open = guide.style.display === 'none' || guide.style.display === '';
+    guide.style.display = open ? 'block' : 'none';
+    btn.textContent = open ? 'Ocultar guía' : '¿Cómo obtenerlo?';
+  }
+
   // Load user info
   fetch('/auth/me').then(r => {
     if (r.status === 302 || r.status === 401 || r.status === 403) {
