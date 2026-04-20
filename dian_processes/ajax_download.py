@@ -51,11 +51,33 @@ def _safe_name(meta: dict, cufe: str, idx: int) -> str:
 
     The official DIAN Recibidos Excel uses Spanish headers like
     ``"Prefijo"``, ``"Número"`` or ``"Folio"``, ``"Nombre Emisor"``,
-    ``"NIT Emisor"``. Older AJAX payloads used English keys like
-    ``DocumentNumber`` / ``SenderName``. Both are supported via fuzzy match.
+    ``"NIT Emisor"``, ``"Fecha Emisión"``. Both Spanish and English keys
+    are supported via fuzzy match.
 
-    Output shape: ``<prefijo><folio>_<emisor>_<cufe12>_<idx>.zip``
+    Output shape: ``<fecha>_<prefijo><folio>_<emisor>_<cufe12>.zip``
+    Convention: Fecha-Factura-Proveedor
     """
+    # Fecha de emisión del documento (YYYY-MM-DD).
+    fecha_raw = _pick_by_fragments(
+        meta,
+        ("fecha", "emisi"),
+        ("fecha", "documento"),
+        ("fecha",),
+        ("issuedate",),
+        ("date",),
+    )
+    # Normalise to YYYY-MM-DD (DIAN often returns DD/MM/YYYY or YYYY-MM-DD).
+    fecha = ""
+    if fecha_raw:
+        import re as _re
+        m = _re.search(r"(\d{4})[/-](\d{2})[/-](\d{2})", fecha_raw)
+        if m:
+            fecha = f"{m.group(1)}-{m.group(2)}-{m.group(3)}"
+        else:
+            m2 = _re.search(r"(\d{2})[/-](\d{2})[/-](\d{4})", fecha_raw)
+            if m2:
+                fecha = f"{m2.group(3)}-{m2.group(2)}-{m2.group(1)}"
+
     # Prefijo / serie (e.g. "FVE", "FC").
     prefix = _pick_by_fragments(
         meta,
@@ -88,9 +110,9 @@ def _safe_name(meta: dict, cufe: str, idx: int) -> str:
     )[:40]
 
     parts = []
+    if fecha:
+        parts.append(fecha)
     if prefix and folio:
-        # FVE and 12345 combine into FVE12345 (no separator — that's how
-        # DIAN's portal shows them).
         parts.append(f"{prefix}{folio}")
     elif folio:
         parts.append(folio)
@@ -98,13 +120,12 @@ def _safe_name(meta: dict, cufe: str, idx: int) -> str:
         parts.append(prefix)
     if emisor:
         parts.append(emisor)
-    # Always keep CUFE prefix so two rows with identical prefix+folio+emisor
-    # (rare but possible on same-day reissues) still get unique names.
+    # CUFE prefix keeps names unique on same-day reissues.
     parts.append(cufe[:12])
 
     raw = "_".join(parts) if parts else cufe[:12]
     safe = sanitize_filename(re.sub(r"\s+", "_", raw))
-    return f"{safe}_{idx}.zip"
+    return f"{safe}.zip"
 
 
 def _download_one(
