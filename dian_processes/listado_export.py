@@ -220,25 +220,26 @@ class ListadoExporter:
                 if not link:
                     continue
 
-                # Extract href to bypass target="_blank" — navigate on current
-                # page so expect_download fires correctly in headless/server mode.
-                href = (link.get_attribute("href") or "").strip()
-                if href.startswith("/"):
-                    href = "https://catalogo-vpfe.dian.gov.co" + href
-
                 zip_name = f"temp_listado_{int(time.time())}.zip"
                 zip_path = os.path.join(self.config.output_dir, zip_name)
 
-                if href:
-                    with page.expect_download(timeout=60000) as dl:
-                        page.goto(href, wait_until="commit")
-                else:
-                    # Fallback: direct click (same-page download)
+                # href="#" means JavaScript-driven download (likely window.open).
+                # Try to capture the popup page it opens; fall back to
+                # same-page expect_download (re-click is safe since href="#").
+                try:
+                    with page.context.expect_page(timeout=8000) as popup_info:
+                        link.scroll_into_view_if_needed()
+                        link.click()
+                    popup = popup_info.value
+                    with popup.expect_download(timeout=60000) as dl:
+                        pass
+                    dl.value.save_as(zip_path)
+                except Exception:
                     with page.expect_download(timeout=60000) as dl:
                         link.scroll_into_view_if_needed()
                         link.click()
+                    dl.value.save_as(zip_path)
 
-                dl.value.save_as(zip_path)
                 return self._process_zip(zip_path)
 
             self._status(f"  (esperando — intento {attempt}/{self.config.max_poll_retries})")
