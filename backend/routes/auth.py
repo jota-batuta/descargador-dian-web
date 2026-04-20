@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import asyncio
 from typing import Annotated
 
 import jwt
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, Response
 from fastapi.responses import RedirectResponse
+
+from backend.email import send_welcome_background
 
 from backend.auth import (
     clear_auth_cookie,
@@ -71,6 +74,8 @@ async def register(
     pw_hash = hash_password(password)
 
     user_id = await create_user(db, email, full_name, phone, organization, pw_hash, ip, ua)
+
+    asyncio.create_task(send_welcome_background(email, full_name))
 
     response = RedirectResponse(url="/app.html", status_code=303)
     token = create_token(user_id, email)
