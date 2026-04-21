@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 import os
 import tempfile
 from pathlib import Path
+
+log = logging.getLogger(__name__)
 
 from backend.job_manager import Job, JobStatus
 from backend.zip_packager import build_result_zip
@@ -103,8 +106,8 @@ def _insert_log(job: Job, pool) -> None:
                 """,
                 (job.user_email, job.id, job.start_date, job.end_date, job.empresa),
             )
-    except Exception:
-        pass  # log failure must not abort the download
+    except Exception as exc:
+        log.warning("_insert_log failed (non-fatal): %s", exc)
 
 
 def _update_log(job: Job, status: str, result: dict | None = None, pool=None) -> None:
@@ -136,5 +139,9 @@ def _update_log(job: Job, status: str, result: dict | None = None, pool=None) ->
                     job.id,
                 ),
             )
-    except Exception:
-        pass
+        log.info(
+            "_update_log job=%s status=%s total=%s ok=%s err=%s",
+            job.id[:8], status, r.get("total"), r.get("ok"), r.get("err"),
+        )
+    except Exception as exc:
+        log.warning("_update_log failed (non-fatal): %s", exc)

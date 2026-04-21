@@ -27,6 +27,20 @@ async def create_job(
     if not token_url.startswith("https://catalogo-vpfe.dian.gov.co"):
         raise HTTPException(status_code=422, detail="Token URL inválido")
 
+    from datetime import date as _date
+    try:
+        d_start = _date.fromisoformat(start_date)
+        d_end = _date.fromisoformat(end_date)
+    except ValueError:
+        raise HTTPException(status_code=422, detail="Fechas inválidas (usa YYYY-MM-DD)")
+    if d_start.year != d_end.year:
+        raise HTTPException(
+            status_code=422,
+            detail="El rango debe estar dentro del mismo año calendario (limitación DIAN)",
+        )
+    if d_end < d_start:
+        raise HTTPException(status_code=422, detail="La fecha fin no puede ser anterior a la fecha inicio")
+
     job = job_store.create(
         user_email=user["email"],
         empresa=empresa or user.get("full_name", ""),

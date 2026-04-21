@@ -93,6 +93,7 @@ class ListadoUpdater:
             cufe = _row_cufe(tuple(cells), cufe_col_idx)
             if not cufe:
                 continue
+            cufe = cufe.lower()  # normalize: run_ajax_download lowercases CUFEs
 
             row_idx = row[0].row
             self._cufe_to_row[cufe] = row_idx
