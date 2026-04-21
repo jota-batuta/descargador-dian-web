@@ -209,41 +209,84 @@ class ListadoExporter:
                 continue
             time.sleep(3)
 
-            icon = page.query_selector("#tableExport tbody tr td:nth-of-type(8) a i")
+            # Wait until the first row's spinner disappears (DIAN finished generating).
+            # The download link in col-8 exists while generating but the file isn't
+            # ready yet — only proceed once the fa-spin icon is gone from row 1.
+            spinner = page.query_selector("#tableExport tbody tr:first-child td i.fa-spin")
+            if spinner:
+                self._status(f"  (generando en DIAN — intento {attempt}/{self.config.max_poll_retries})")
+                time.sleep(self.config.poll_interval_s)
+                continue
+
+            icon = page.query_selector("#tableExport tbody tr:first-child td:nth-of-type(8) a i")
             if not icon:
-                icon = page.query_selector("#tableExport tbody tr td a i")
+                icon = page.query_selector("#tableExport tbody tr:first-child td a i")
 
             if icon:
                 self._status("¡Listado listo! Descargando ZIP...")
-                link = icon.evaluate_handle("el => el.closest('a')").as_element()
-                if not link:
-                    link = page.query_selector("#tableExport tbody tr td:nth-of-type(8) a")
-                if not link:
-                    continue
 
                 zip_name = f"temp_listado_{int(time.time())}.zip"
                 zip_path = os.path.join(self.config.output_dir, zip_name)
 
-                # DIAN's export download button uses href="#" + JS (window.open or
-                # XHR). Strategy: intercept the outgoing network request to capture
-                # the real download URL, then fetch with requests using session
-                # cookies. Fallback: popup capture via context.expect_page().
+                # Get the link element and its screen coordinates BEFORE setting
+                # up route interception (page.route triggers a DOM re-render on
+                # DIAN's portal, making ElementHandle refs go stale).
+                link = icon.evaluate_handle("el => el.closest('a')").as_element()
+                if not link:
+                    link = page.query_selector("#tableExport tbody tr:first-child td:nth-of-type(8) a")
+                if not link:
+                    continue
+
+                # Log HTML of the row so we can see the link structure
+                try:
+                    row_html = page.inner_html("#tableExport tbody tr")
+                    self._status(f"ROW HTML: {row_html[:500]}")
+                except Exception as e:
+                    self._status(f"(no se pudo leer row HTML: {e})")
+
+                # Scroll into view while element is still live
+                try:
+                    link.scroll_into_view_if_needed()
+                except Exception:
+                    pass
+
+                bbox = None
+                try:
+                    bbox = link.bounding_box()
+                    self._status(f"bbox: {bbox}")
+                except Exception as e:
+                    self._status(f"bbox error: {e}")
+
+                all_urls: list[str] = []
                 captured_urls: list[str] = []
 
                 def _intercept(route, request):
                     url = request.url
-                    if any(x in url.lower() for x in ("download", ".zip", "getfile", "/export/")):
+                    all_urls.append(url)
+                    if any(x in url.lower() for x in ("download", ".zip", "getfile", "/export/", "archivo")):
                         captured_urls.append(url)
                     route.continue_()
 
+                # Intercept AFTER capturing bbox — then click by coordinates
+                # (trusted gesture, no stale ElementHandle).
                 page.route("**/*", _intercept)
-                link.scroll_into_view_if_needed()
-                link.click()
+                if bbox:
+                    cx = bbox["x"] + bbox["width"] / 2
+                    cy = bbox["y"] + bbox["height"] / 2
+                    page.mouse.click(cx, cy)
+                else:
+                    page.evaluate("""
+                        () => {
+                            const el = document.querySelector('#tableExport tbody tr td:nth-of-type(8) a')
+                                     || document.querySelector('#tableExport tbody tr td a');
+                            if (el) el.click();
+                        }
+                    """)
                 time.sleep(6)
                 page.unroute("**/*", _intercept)
 
                 if captured_urls:
-                    self._status(f"URL de descarga capturada: {captured_urls[0][:80]}")
+                    self._status(f"URL capturada: {captured_urls[0][:80]}")
                     cookies = {c["name"]: c["value"] for c in page.context.cookies()}
                     headers = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120 Safari/537.36"}
                     r = requests.get(captured_urls[0], cookies=cookies, headers=headers, timeout=120, stream=True)
@@ -252,21 +295,33 @@ class ListadoExporter:
                             for chunk in r.iter_content(8192):
                                 f.write(chunk)
                         return self._process_zip(zip_path)
-                    self._status(f"requests falló HTTP {r.status_code}, intentando popup...")
+                    self._status(f"requests falló HTTP {r.status_code}, probando popup...")
 
-                # Fallback: try popup (window.open) then same-page download
+                # Fallback: popup (window.open) or same-page download
                 try:
                     with page.context.expect_page(timeout=8000) as popup_info:
-                        link.scroll_into_view_if_needed()
-                        link.click()
+                        if bbox:
+                            page.mouse.click(cx, cy)
+                        else:
+                            page.evaluate("""() => {
+                                const el = document.querySelector('#tableExport tbody tr td:nth-of-type(8) a')
+                                         || document.querySelector('#tableExport tbody tr td a');
+                                if (el) el.click();
+                            }""")
                     popup = popup_info.value
                     with popup.expect_download(timeout=60000) as dl:
                         pass
                     dl.value.save_as(zip_path)
                 except Exception:
                     with page.expect_download(timeout=60000) as dl:
-                        link.scroll_into_view_if_needed()
-                        link.click()
+                        if bbox:
+                            page.mouse.click(cx, cy)
+                        else:
+                            page.evaluate("""() => {
+                                const el = document.querySelector('#tableExport tbody tr td:nth-of-type(8) a')
+                                         || document.querySelector('#tableExport tbody tr td a');
+                                if (el) el.click();
+                            }""")
                     dl.value.save_as(zip_path)
 
                 return self._process_zip(zip_path)
