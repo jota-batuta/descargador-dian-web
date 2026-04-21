@@ -24,8 +24,12 @@ def get_semaphore() -> asyncio.Semaphore:
     return _semaphore
 
 
+_JOBS_ROOT = Path(os.getenv("JOBS_DIR", "/data/dian-jobs"))
+
+
 async def enqueue_job(job: Job, token_url: str) -> None:
-    work_dir = Path(tempfile.mkdtemp(prefix=f"dian-{job.id[:8]}-"))
+    _JOBS_ROOT.mkdir(parents=True, exist_ok=True)
+    work_dir = Path(tempfile.mkdtemp(prefix=f"dian-{job.id[:8]}-", dir=_JOBS_ROOT))
     job.work_dir = work_dir
     loop = asyncio.get_event_loop()
     asyncio.create_task(_run_job(job, token_url, loop))

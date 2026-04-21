@@ -7,3 +7,8 @@ services:
     env_file:
       - .env
     restart: unless-stopped
+    volumes:
+      - dian_jobs:/data/dian-jobs
+
+volumes:
+  dian_jobs:

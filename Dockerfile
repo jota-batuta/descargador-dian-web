@@ -29,6 +29,8 @@ COPY dian_core/    dian_core/
 COPY dian_processes/ dian_processes/
 COPY frontend/     frontend/
 
+RUN mkdir -p /data/dian-jobs
+
 EXPOSE 8000
 
 # Single worker — in-memory job store must not be shared across processes

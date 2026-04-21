@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Form, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, Form, HTTPException
 from fastapi.responses import StreamingResponse
 from sse_starlette.sse import EventSourceResponse
 
@@ -101,7 +101,11 @@ async def job_status(job_id: str, user: dict = Depends(require_active_user)):
 
 
 @router.get("/{job_id}/download")
-async def download_job(job_id: str, user: dict = Depends(require_active_user)):
+async def download_job(
+    job_id: str,
+    background_tasks: BackgroundTasks,
+    user: dict = Depends(require_active_user),
+):
     job = job_store.get(job_id)
     if job is None:
         raise HTTPException(status_code=404)
@@ -117,6 +121,9 @@ async def download_job(job_id: str, user: dict = Depends(require_active_user)):
         with open(zip_path, "rb") as f:
             while chunk := f.read(65536):
                 yield chunk
+
+    job.downloaded = True
+    background_tasks.add_task(job_store.cleanup_job, job)
 
     return StreamingResponse(
         iterfile(),

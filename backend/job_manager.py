@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import shutil
 import time
 import uuid
 from dataclasses import dataclass, field
@@ -31,10 +32,13 @@ class Job:
     empresa: str = ""
     start_date: str = ""
     end_date: str = ""
+    downloaded: bool = False
 
 
 class JobStore:
-    def __init__(self, ttl_seconds: int = 7200):
+    # Keep completed jobs in memory for 24h so the auto-download can retry
+    # if the browser blocked the first attempt.
+    def __init__(self, ttl_seconds: int = 86400):
         self._jobs: dict[str, Job] = {}
         self._ttl = ttl_seconds
 
@@ -55,6 +59,12 @@ class JobStore:
     def get(self, job_id: str) -> Optional[Job]:
         return self._jobs.get(job_id)
 
+    def cleanup_job(self, job: Job) -> None:
+        """Delete work_dir immediately and remove job from store."""
+        if job.work_dir and job.work_dir.exists():
+            shutil.rmtree(job.work_dir, ignore_errors=True)
+        self._jobs.pop(job.id, None)
+
     def _evict_expired(self) -> None:
         now = time.time()
         expired = [
@@ -65,7 +75,6 @@ class JobStore:
         for jid in expired:
             job = self._jobs.pop(jid)
             if job.work_dir and job.work_dir.exists():
-                import shutil
                 shutil.rmtree(job.work_dir, ignore_errors=True)
 
 

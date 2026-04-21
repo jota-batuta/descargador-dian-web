@@ -274,7 +274,6 @@
 
     <div id="downloadSection">
       <p class="success-msg" id="successMsg"></p>
-      <a class="btn-download" id="downloadBtn" href="#">Descargar ZIP</a>
     </div>
   </div>
 </main>
@@ -405,8 +404,15 @@
       progressSection.style.display = 'block';
       downloadSection.style.display = 'block';
       document.getElementById('successMsg').textContent =
-        `¡Listo! ${d.ok ?? ''} documentos descargados. Haz clic para guardar el ZIP.`;
-      document.getElementById('downloadBtn').href = `/api/jobs/${jobId}/download`;
+        `¡Listo! ${d.ok ?? ''} documentos descargados. El ZIP se está guardando en tu carpeta de descargas.`;
+
+      // Auto-download: trigger immediately, no second click needed
+      const a = document.createElement('a');
+      a.href = `/api/jobs/${jobId}/download`;
+      a.download = '';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     });
 
     eventSource.addEventListener('error', (e) => {
