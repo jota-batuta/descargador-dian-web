@@ -85,6 +85,80 @@ El logo **siempre** enlaza a `https://www.batutaai.com` en nueva pestaña. El al
 - `.bt-hero-glow` + `.bt-above-glow` — fondo radial sutil (solo auth cards).
 - `.bt-footer-link` — links secundarios debajo de forms.
 
+### Primitives de landing (login/app como páginas auto-contenidas)
+
+- `.bt-landing-header` + `.bt-landing-header-inner` — header sticky con blur backdrop para páginas tipo landing.
+- `.bt-landing-section` — sección vertical con padding 72px, max-width 1040px, centrada. Modificadores: `--tight` (padding 48px), `--divided` (borde superior `--grafito`).
+- `.bt-eyebrow` — microcopy mono 11-12px cobalto UPPERCASE con tracking `0.08em`. Va antes de cada heading de sección.
+- `.bt-heading-xl` / `.bt-heading-lg` / `.bt-heading-md` — escala tipográfica responsive (`clamp(...)`).
+- `.bt-lead` — párrafo intro, 1.05rem, bruma, max-width 640px.
+- `.bt-kicker` — micro-copy cobalto-glow para cerrar una sección con punch.
+- `.bt-hero` — grid de 2 columnas en desktop (copy izquierda, mockup derecha). Apila en <900px.
+- `.bt-metric-chips` + `.bt-metric-chip` — pills con dato + métrica. `strong` dentro del chip → cobalto.
+- `.bt-hero-ctas` — cluster de CTAs (wrap, gap 12px).
+
+### Mockup window (screenshot-style inline)
+
+- `.bt-mockup-window` — contenedor con chrome superior y body, estilo captura de producto.
+- `.bt-mockup-chrome` + `.bt-mockup-chrome-dots` / `-dot` / `-title` / `-status` — chrome superior: 3 puntos grafito, título mono tercerario al centro, status opcional (esmeralda pulsing "completed / en curso").
+- `.bt-mockup-body` — padding 18-20px.
+- `.bt-mockup-form-row` + `.bt-mockup-input` + `.bt-mockup-radio` + `.bt-mockup-radio-dot` — replicar formularios de apps externas (ej. el portal DIAN en el step 01 de `app.html`).
+- `.bt-mockup-btn-primary` — botón simulado cobalto dentro de un mockup (no clickeable).
+
+**Regla:** los mockups son inline en HTML + CSS. No usar SVG exportado ni capturas de pantalla. Los tokens de color viven en `brand.css` — cada mockup hereda el tema y es re-coloreable cambiando `--cobalto`.
+
+### Step cards (guía de 5 pasos en `app.html`)
+
+- `.bt-step-grid` + `.bt-step` — grid de pasos apilados con gap 36px.
+- `.bt-step-num` — número grande mono cobalto (2rem, letter-spacing -0.02em).
+- `.bt-step-title` — heading del paso, sans semibold.
+- `.bt-step-body` — párrafo con soporte para `<strong>` (bruma-clara) y `<code>` (mono sobre grafito).
+- `.bt-step-copy` + `.bt-step-visual` — columnas (texto / mockup). Alternar con `.bt-step--reverse` para zig-zag visual en desktop.
+
+### Pillars (grid de 3 o 4 columnas para responder preguntas)
+
+- `.bt-pillar-grid` con variantes `--3` y `--4`.
+- `.bt-pillar` — stack vertical (num + title + body).
+- `.bt-pillar-num` — número mono cobalto (01, 02, 03, 04), 1.6rem.
+- `.bt-pillar-title` / `.bt-pillar-body` — heading + párrafo. `em` en body → cobalto-glow non-italic.
+
+### Ecosystem cards (Batuta AI + Advisory)
+
+- `.bt-ecosystem-grid` — 2 columnas en desktop, apila en <720px.
+- `.bt-ecosystem-card` — card con hover (`translateY(-2px)`, borde grafito-fuerte). Envuelve todo el contenido como un `<a>` clickeable.
+- `.bt-ecosystem-card-tag` — eyebrow mono interno.
+- `.bt-ecosystem-card-title` / `.bt-ecosystem-card-body` / `.bt-ecosystem-card-cta` — título, descripción, CTA "→".
+
+### Ambassadors / share
+
+- `.bt-share-actions` — cluster de botones para compartir (Copiar link + WhatsApp).
+- `.bt-share-toast` / `.bt-share-toast--visible` — confirmación breve tras copiar (fade in/out 2.4s).
+
+### Contact & footer
+
+- `.bt-contact-channels` + `.bt-contact-channel` — fila de canales (WhatsApp, email) con label strong + link cobalto.
+- `.bt-footer-minimal` — footer 32px padding, borde superior grafito, texto bruma-terciaria; links bruma → cobalto en hover.
+
+### Selects
+
+- `.bt-select` — dropdown dark matching `.bt-input`. Caret SVG incrustado en `background-image`. Opciones heredan fondo nocturno.
+
+### Post-download "pasalo" block (solo en `app.html`)
+
+- `.bt-pasalo` — card con gradiente cobalto sutil + borde cobalto sólido, para el loop de embajadores tras completar una descarga.
+- `.bt-pasalo-heading` + `.bt-pasalo-body` — heading y body. `strong` dentro del body → cobalto-glow.
+
+## Loop de embajadores
+
+Dos puntos de conversión compartidos entre login y app:
+
+1. **Login** (sección "Embajadores"): visible ante cualquier visitante anónimo, con copy "¿Te funcionó? Pasalo".
+2. **App** (bloque `.bt-pasalo`, aparece al evento SSE `job_done`): mensaje dinámico `"Acabás de ahorrarte ~{N} minutos"` donde `N = total_docs × 5` (promedio 5 min/factura manual). La unidad auto-formatea a horas cuando N ≥ 1000.
+
+Ambos incluyen:
+- `Copiar link` — usa `navigator.clipboard.writeText('https://descargasdian.batutaai.com/login.html')` con fallback `document.execCommand('copy')`.
+- `Compartir por WhatsApp` — `wa.me/?text=<texto pre-compuesto>`.
+
 ## Correo transaccional
 
 - **Subject:** `Bienvenido a Batuta AI — DIAN Downloader`
