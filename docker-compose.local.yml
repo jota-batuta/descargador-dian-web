@@ -1,0 +1,32 @@
+# Local-only override: adds an ephemeral Postgres so the app can boot without
+# touching the production database. Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.local.yml up --build
+# NOT for production. Never commit production secrets to this file.
+
+services:
+  web:
+    # Override (not append) the default host port mapping. The base compose.yml
+    # maps 8001:8000; for local dev we remap to 8002 to avoid conflicts.
+    ports: !override
+      - "8002:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: batuta_downloads_trials
+      POSTGRES_USER: batuta_app
+      POSTGRES_PASSWORD: local
+    # No host port — only the `web` service reaches it via the compose network.
+    volumes:
+      - pg_data_local:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U batuta_app -d batuta_downloads_trials"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pg_data_local:
