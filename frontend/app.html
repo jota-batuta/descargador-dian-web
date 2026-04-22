@@ -10,31 +10,47 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/brand.css">
   <style>
+    /* Header / user info */
     .user-info {
       display: flex;
       align-items: center;
-      gap: 16px;
-      font-size: 0.87rem;
+      gap: 14px;
+      font-size: 0.85rem;
       color: var(--bruma);
     }
     .user-info strong { color: var(--bruma-clara); font-weight: 600; }
+    @media (max-width: 640px) {
+      .user-info .user-name { display: none; }
+    }
 
+    /* Page intro */
+    .app-intro {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 56px 20px 32px;
+      text-align: center;
+    }
+    .app-intro .bt-heading-lg { margin-bottom: 12px; }
+    .app-intro .bt-lead { margin: 0 auto; }
+
+    /* Guide / form wrapper */
     main {
-      max-width: 620px;
-      margin: 40px auto;
-      padding: 0 20px;
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 0 20px 72px;
       position: relative;
       z-index: 1;
     }
-    .app-card { padding: 32px 36px; }
+
+    /* Form card */
+    .app-card { padding: 32px 36px; margin-top: 48px; }
     .app-card h2 {
-      font-size: 1.05rem;
+      font-size: 1.1rem;
       font-weight: 700;
-      margin-bottom: 24px;
+      margin-bottom: 22px;
       color: var(--bruma-clara);
       letter-spacing: -0.01em;
     }
-
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
     .dian-limit-hint {
@@ -64,7 +80,7 @@
     }
     .log-box { display: none; }
 
-    /* Download button */
+    /* Download success */
     #downloadSection { margin-top: 24px; display: none; text-align: center; }
     .success-msg {
       font-size: 0.9rem;
@@ -73,61 +89,50 @@
       margin-bottom: 14px;
     }
 
-    /* Help toggle button */
-    .help-toggle {
-      background: transparent;
-      border: 1px solid var(--grafito);
-      color: var(--cobalto);
+    /* ──── Step mockup — DIAN portal (step 01) ──── */
+    .dian-mockup { font-family: var(--font-sans); }
+    .dian-mockup-header {
+      font-family: var(--font-mono);
       font-size: 0.72rem;
-      font-weight: 600;
-      padding: 3px 9px;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-left: 10px;
-      vertical-align: middle;
-      transition: background 0.15s, color 0.15s, border-color 0.15s;
-    }
-    .help-toggle:hover {
-      background: var(--cobalto-soft);
-      border-color: var(--cobalto);
-      color: var(--cobalto-glow);
+      color: var(--bruma-terciaria);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 14px;
+      text-align: center;
     }
 
-    /* Contextual guide */
-    .token-guide {
+    /* ──── Step mockup — Inbox (step 02) ──── */
+    .inbox-mockup { font-family: var(--font-sans); }
+    .inbox-row {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: 6px;
       background: var(--nocturno);
       border: 1px solid var(--grafito);
-      border-radius: 10px;
-      padding: 16px 18px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
-    .guide-title {
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: var(--bruma-clara);
-      margin-bottom: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      font-family: var(--font-mono);
+    .inbox-row--highlight {
+      border-color: var(--cobalto);
+      background: var(--cobalto-soft);
     }
-    .guide-steps {
-      padding-left: 18px;
-      font-size: 0.82rem;
-      color: var(--bruma);
-      line-height: 1.55;
-    }
-    .guide-steps li { margin-bottom: 5px; }
-    .guide-steps strong { color: var(--bruma-clara); }
+    .inbox-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--cobalto); }
+    .inbox-content { min-width: 0; }
+    .inbox-from { font-size: 0.8rem; color: var(--bruma-clara); font-weight: 600; margin-bottom: 2px; }
+    .inbox-subject { font-size: 0.78rem; color: var(--bruma); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .inbox-tag { font-size: 0.65rem; font-family: var(--font-mono); color: var(--esmeralda); padding: 2px 8px; border: 1px solid var(--esmeralda); border-radius: 99px; letter-spacing: 0.05em; }
+    .inbox-row--muted { opacity: 0.4; }
 
-    /* Email mockup — kept light because it mimics a real Gmail screenshot */
-    .guide-illustration { margin: 14px 0 10px; }
-    .email-mockup {
+    /* ──── Step mockup — Email body + context menu (step 03) ──── */
+    .email-mockup-card {
       background: #fff;
-      border: 1px solid var(--grafito);
-      border-radius: 8px;
+      border-radius: 6px;
       overflow: hidden;
       font-size: 0.78rem;
       color: #111;
+      margin: 10px;
     }
     .email-meta {
       background: #f3f4f6;
@@ -165,28 +170,69 @@
       min-width: 200px;
       overflow: hidden;
     }
-    .ctx-item {
-      padding: 6px 14px;
-      font-size: 0.78rem;
-      color: #333;
-      border-bottom: 1px solid #f3f4f6;
-    }
+    .ctx-item { padding: 6px 14px; font-size: 0.78rem; color: #333; border-bottom: 1px solid #f3f4f6; }
     .ctx-item:last-child { border-bottom: none; }
     .ctx-divider { border-top: 1px solid #e5e7eb; }
-    .ctx-highlight {
-      background: #dbeafe;
-      color: #1d4ed8;
-      font-weight: 700;
-    }
+    .ctx-highlight { background: #dbeafe; color: #1d4ed8; font-weight: 700; }
 
-    .guide-warning {
+    /* ──── Step mockup — arrow down to form (step 04) ──── */
+    .arrow-mockup {
+      text-align: center;
+      padding: 32px 20px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--bruma);
+    }
+    .arrow-big {
+      font-size: 3rem;
+      color: var(--cobalto);
+      line-height: 1;
+      margin-bottom: 10px;
+      animation: bt-arrow-bounce 1.6s ease-in-out infinite;
+    }
+    @keyframes bt-arrow-bounce {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(8px); }
+    }
+    .arrow-label { font-size: 0.78rem; color: var(--bruma-terciaria); text-transform: uppercase; letter-spacing: 0.08em; }
+
+    /* ──── Step mockup — progress 100% (step 05) ──── */
+    .progress-mockup { padding: 20px 22px; }
+    .progress-mockup-bar {
+      height: 12px;
+      background: var(--grafito);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    .progress-mockup-fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, var(--cobalto), var(--cobalto-glow));
+      border-radius: 99px;
+    }
+    .progress-mockup-stats {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
       font-size: 0.78rem;
-      color: hsl(43 90% 75%);
-      background: var(--amber-warn-soft);
-      border: 1px solid var(--amber-warn);
-      border-radius: 6px;
-      padding: 8px 11px;
-      margin-top: 10px;
+      color: var(--bruma);
+      margin-bottom: 14px;
+    }
+    .progress-mockup-file {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      background: var(--nocturno);
+      border: 1px solid var(--grafito);
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--bruma-clara);
+    }
+    .progress-mockup-file-icon {
+      font-size: 1.1rem;
     }
   </style>
 </head>
@@ -199,7 +245,7 @@
     <span>Batuta <span class="bt-brand-accent">AI</span></span>
   </a>
   <div class="user-info">
-    <span>Hola, <strong id="userName">...</strong></span>
+    <span class="user-name">Hola, <strong id="userName">...</strong></span>
     <span class="bt-chip" id="trialDays">...</span>
     <form action="/auth/logout" method="post" style="margin:0">
       <button class="bt-btn bt-btn-ghost" type="submit">Cerrar sesión</button>
@@ -207,30 +253,133 @@
   </div>
 </header>
 
+<!-- Page intro -->
+<section class="app-intro">
+  <div class="bt-eyebrow">Nueva descarga</div>
+  <h1 class="bt-heading-lg">Cinco pasos. 3 minutos.</h1>
+  <p class="bt-lead">
+    Te guiamos desde el portal DIAN hasta tu ZIP. Seguí los pasos en orden — el formulario está al final.
+  </p>
+</section>
+
 <main>
-  <div class="bt-card app-card">
-    <h2>Nueva descarga de documentos DIAN</h2>
 
-    <form id="jobForm">
-      <label class="bt-label" for="token_url">
-        Token URL del portal DIAN
-        <button type="button" class="help-toggle" onclick="toggleGuide()" id="helpBtn">
-          ¿Cómo obtenerlo?
-        </button>
-      </label>
+  <!-- GUÍA DE 5 PASOS -->
+  <section class="bt-step-grid">
 
-      <!-- Guía contextual -->
-      <div id="tokenGuide" class="token-guide" style="display:none">
-        <p class="guide-title">Cómo obtener tu Token URL</p>
-        <ol class="guide-steps">
-          <li>Abre el correo electrónico que DIAN te envió con tu token de acceso.</li>
-          <li>Busca el botón verde <strong>"Ingrese aquí"</strong>.</li>
-          <li><strong>Haz clic derecho</strong> sobre ese botón y selecciona <strong>"Copiar enlace"</strong> (Copy link).</li>
-          <li>Pega el enlace copiado en el campo de abajo.</li>
-        </ol>
-        <!-- Ilustración del paso clave -->
-        <div class="guide-illustration">
-          <div class="email-mockup">
+    <!-- STEP 01 -->
+    <div class="bt-step">
+      <div class="bt-step-copy">
+        <div class="bt-step-num">01</div>
+        <div class="bt-step-title">Solicita el token en el portal DIAN</div>
+        <p class="bt-step-body">
+          Entra a <code>catalogo-vpfe.dian.gov.co</code>. En la pestaña <strong>Empresa</strong>, pon tu <strong>NIT</strong> y el <strong>documento del representante legal</strong> (cédula). Haz clic en <strong>Solicitar token</strong>.
+        </p>
+        <p class="bt-step-body" style="font-size:0.85rem;color:var(--bruma-terciaria)">
+          Esto <em style="color:var(--amber-warn);font-style:normal">no</em> es un login — es un formulario aparte que dispara el envío del token al correo registrado de la empresa.
+        </p>
+      </div>
+      <div class="bt-step-visual">
+        <div class="bt-mockup-window">
+          <div class="bt-mockup-chrome">
+            <div class="bt-mockup-chrome-dots">
+              <span class="bt-mockup-chrome-dot"></span>
+              <span class="bt-mockup-chrome-dot"></span>
+              <span class="bt-mockup-chrome-dot"></span>
+            </div>
+            <span class="bt-mockup-chrome-title">catalogo-vpfe.dian.gov.co</span>
+          </div>
+          <div class="bt-mockup-body dian-mockup">
+            <div class="dian-mockup-header">Portal VPFE · DIAN · Facturación Electrónica</div>
+            <div class="bt-mockup-form-row">
+              <label>Tipo de usuario</label>
+              <div style="display:flex;gap:18px">
+                <div class="bt-mockup-radio"><span class="bt-mockup-radio-dot"></span>Persona natural</div>
+                <div class="bt-mockup-radio"><span class="bt-mockup-radio-dot bt-mockup-radio-dot--active"></span>Empresa</div>
+              </div>
+            </div>
+            <div class="bt-mockup-form-row">
+              <label>NIT</label>
+              <span class="bt-mockup-input">901.234.567-8</span>
+            </div>
+            <div class="bt-mockup-form-row">
+              <label>Documento rep. legal</label>
+              <span class="bt-mockup-input">79.123.456</span>
+            </div>
+            <div style="text-align:right;margin-top:12px">
+              <span class="bt-mockup-btn-primary">Solicitar token</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 02 -->
+    <div class="bt-step bt-step--reverse">
+      <div class="bt-step-copy">
+        <div class="bt-step-num">02</div>
+        <div class="bt-step-title">Abrí el correo que DIAN te envía</div>
+        <p class="bt-step-body">
+          En los próximos <strong>~2 minutos</strong> DIAN manda un correo desde <code>notificaciones@dian.gov.co</code> con asunto <strong>Token Acceso Portal VPFE</strong>. Va al correo registrado de la empresa.
+        </p>
+        <p class="bt-step-body" style="font-size:0.85rem;color:var(--bruma-terciaria)">
+          Si no llegó: revisa spam, o vuelve al portal y solicítalo de nuevo (los tokens se pueden pedir cuantas veces necesites).
+        </p>
+      </div>
+      <div class="bt-step-visual">
+        <div class="bt-mockup-window">
+          <div class="bt-mockup-chrome">
+            <div class="bt-mockup-chrome-dots">
+              <span class="bt-mockup-chrome-dot"></span>
+              <span class="bt-mockup-chrome-dot"></span>
+              <span class="bt-mockup-chrome-dot"></span>
+            </div>
+            <span class="bt-mockup-chrome-title">Gmail · Bandeja de entrada</span>
+          </div>
+          <div class="bt-mockup-body inbox-mockup" style="padding:14px">
+            <div class="inbox-row inbox-row--highlight">
+              <span class="inbox-dot"></span>
+              <div class="inbox-content">
+                <div class="inbox-from">notificaciones@dian.gov.co</div>
+                <div class="inbox-subject">Token Acceso Portal VPFE</div>
+              </div>
+              <span class="inbox-tag">Oficial</span>
+            </div>
+            <div class="inbox-row inbox-row--muted">
+              <span class="inbox-dot" style="background:var(--grafito-fuerte)"></span>
+              <div class="inbox-content">
+                <div class="inbox-from" style="color:var(--bruma)">proveedor@empresa.co</div>
+                <div class="inbox-subject">Re: Factura FE-1847</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 03 -->
+    <div class="bt-step">
+      <div class="bt-step-copy">
+        <div class="bt-step-num">03</div>
+        <div class="bt-step-title">Click <strong>derecho</strong> en el botón verde → Copiar enlace</div>
+        <p class="bt-step-body">
+          <strong>NO</strong> hagas clic izquierdo — eso abriría el portal DIAN y te haría perder el token. <strong>Click derecho</strong> sobre <em style="color:var(--esmeralda);font-style:normal">Ingrese aquí</em> → <strong>Copiar enlace</strong>.
+        </p>
+        <p class="bt-step-body" style="font-size:0.85rem;color:var(--amber-warn)">
+          ⚠ El token caduca en ~60 minutos. Si expira, solicita uno nuevo y vuelve a copiarlo.
+        </p>
+      </div>
+      <div class="bt-step-visual">
+        <div class="bt-mockup-window">
+          <div class="bt-mockup-chrome">
+            <div class="bt-mockup-chrome-dots">
+              <span class="bt-mockup-chrome-dot"></span>
+              <span class="bt-mockup-chrome-dot"></span>
+              <span class="bt-mockup-chrome-dot"></span>
+            </div>
+            <span class="bt-mockup-chrome-title">Correo de DIAN · Token VPFE</span>
+          </div>
+          <div class="email-mockup-card">
             <div class="email-meta">
               <span class="email-from">DIAN &lt;notificaciones@dian.gov.co&gt;</span>
               <span class="email-subject">Token Acceso Portal VPFE</span>
@@ -249,16 +398,93 @@
                   <div class="ctx-item">Inspeccionar</div>
                 </div>
               </div>
-              <p style="font-size:.75rem;color:#888;margin-top:10px">Haz clic derecho sobre el botón verde → "Copiar enlace"</p>
+              <p style="font-size:.72rem;color:#888;margin-top:10px">Haz clic <strong>derecho</strong> sobre el botón verde → "Copiar enlace"</p>
             </div>
           </div>
         </div>
-        <p class="guide-warning">⚠ El token caduca en ~60 minutos. Si expira, solicita uno nuevo a DIAN y pégalo aquí.</p>
       </div>
+    </div>
 
+    <!-- STEP 04 -->
+    <div class="bt-step bt-step--reverse">
+      <div class="bt-step-copy">
+        <div class="bt-step-num">04</div>
+        <div class="bt-step-title">Pega el token aquí abajo</div>
+        <p class="bt-step-body">
+          Token URL + rango de fechas (mismo año calendario — limitación DIAN) + nombre de empresa (opcional, se usa para el nombre del ZIP).
+        </p>
+      </div>
+      <div class="bt-step-visual">
+        <div class="bt-mockup-window">
+          <div class="bt-mockup-chrome">
+            <div class="bt-mockup-chrome-dots">
+              <span class="bt-mockup-chrome-dot"></span>
+              <span class="bt-mockup-chrome-dot"></span>
+              <span class="bt-mockup-chrome-dot"></span>
+            </div>
+            <span class="bt-mockup-chrome-title">Formulario · abajo ↓</span>
+          </div>
+          <div class="arrow-mockup">
+            <div class="arrow-big">↓</div>
+            <div class="arrow-label">Pega aquí</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 05 -->
+    <div class="bt-step">
+      <div class="bt-step-copy">
+        <div class="bt-step-num">05</div>
+        <div class="bt-step-title">Espera tu ZIP</div>
+        <p class="bt-step-body">
+          Descarga paralela. Cobertura verificada sobre los CUFEs del rango. El ZIP empieza a bajar <strong>automáticamente</strong> cuando termina — no tienes que volver a hacer click.
+        </p>
+        <p class="bt-step-body" style="font-size:0.85rem;color:var(--bruma-terciaria)">
+          Cada archivo ya viene renombrado como <code>Fecha-Factura-Proveedor.xml</code>, listo para importar al ERP.
+        </p>
+      </div>
+      <div class="bt-step-visual">
+        <div class="bt-mockup-window">
+          <div class="bt-mockup-chrome">
+            <div class="bt-mockup-chrome-dots">
+              <span class="bt-mockup-chrome-dot"></span>
+              <span class="bt-mockup-chrome-dot"></span>
+              <span class="bt-mockup-chrome-dot"></span>
+            </div>
+            <span class="bt-mockup-chrome-title">Descargando · cobertura 98.5%</span>
+            <span class="bt-mockup-chrome-status">completed</span>
+          </div>
+          <div class="bt-mockup-body progress-mockup">
+            <div class="progress-mockup-bar">
+              <div class="progress-mockup-fill"></div>
+            </div>
+            <div class="progress-mockup-stats">
+              <span>Total: 1.847</span>
+              <span>OK: 1.847</span>
+              <span>Error: 0</span>
+              <span>100%</span>
+            </div>
+            <div class="progress-mockup-file">
+              <span class="progress-mockup-file-icon">📦</span>
+              <span>mi-empresa-2025-01_2025-06.zip · 42 MB</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- FORM -->
+  <div class="bt-card app-card">
+    <h2>Tu descarga</h2>
+
+    <form id="jobForm">
+      <label class="bt-label" for="token_url">Token URL del portal DIAN</label>
       <textarea class="bt-textarea" id="token_url" name="token_url" required rows="2"
         placeholder="https://catalogo-vpfe.dian.gov.co/...?token=..."></textarea>
-      <p class="bt-hint">Copia el token desde tu correo DIAN. Vigencia ~60 min.</p>
+      <p class="bt-hint">Pega el link completo que copiaste del correo DIAN. Vigencia ~60 min.</p>
 
       <div class="row">
         <div>
@@ -277,7 +503,7 @@
 
       <label class="bt-label" for="empresa">Empresa (opcional)</label>
       <input class="bt-input" type="text" id="empresa" name="empresa" placeholder="Mi Empresa SAS">
-      <p class="bt-hint">Se usará como nombre del archivo ZIP resultante.</p>
+      <p class="bt-hint">Se usa como nombre del archivo ZIP resultante.</p>
 
       <button class="bt-btn bt-btn-primary" type="submit" id="startBtn">Iniciar descarga</button>
     </form>
@@ -296,18 +522,30 @@
     <div id="downloadSection">
       <p class="success-msg" id="successMsg"></p>
     </div>
+
+    <!-- Post-download "pasalo" block — aparece tras job_done -->
+    <div class="bt-pasalo" id="pasaloBlock" style="display:none">
+      <div class="bt-pasalo-heading">Acabas de ahorrarte <strong id="pasaloMinutes">~0</strong> minutos.</div>
+      <p class="bt-pasalo-body">
+        Compártelo con un colega en apuros. 120 días gratis, sin tarjeta.
+      </p>
+      <div class="bt-share-actions">
+        <button type="button" class="bt-btn bt-btn-primary" style="width:auto; margin-top:0; padding:10px 20px" id="copyLinkBtn">Copiar link</button>
+        <a href="https://wa.me/?text=Mir%C3%A1%20esta%20app%20que%20descarga%20todos%20los%20docs%20DIAN%20en%203%20minutos%3A%20https%3A%2F%2Fdescargasdian.batutaai.com" target="_blank" rel="noopener" class="bt-btn bt-btn-ghost" style="padding:10px 20px">Compartir por WhatsApp</a>
+        <span class="bt-share-toast" id="copyToast">✓ Link copiado</span>
+      </div>
+    </div>
   </div>
 </main>
 
-<script>
-  function toggleGuide() {
-    const guide = document.getElementById('tokenGuide');
-    const btn = document.getElementById('helpBtn');
-    const open = guide.style.display === 'none' || guide.style.display === '';
-    guide.style.display = open ? 'block' : 'none';
-    btn.textContent = open ? 'Ocultar guía' : '¿Cómo obtenerlo?';
-  }
 
+<footer class="bt-footer-minimal">
+  Batuta AI SAS · <a href="https://www.batutaai.com" target="_blank" rel="noopener">www.batutaai.com</a>
+  · <a href="mailto:jota@batutaai.com">jota@batutaai.com</a>
+  · <a href="https://wa.me/573152425897" target="_blank" rel="noopener">WhatsApp +57 315 242 5897</a>
+</footer>
+
+<script>
   // Load user info
   fetch('/auth/me').then(r => {
     if (r.status === 302 || r.status === 401 || r.status === 403) {
@@ -327,7 +565,7 @@
   document.getElementById('end_date').value = today.toISOString().slice(0, 10);
   document.getElementById('start_date').value = firstDay.toISOString().slice(0, 10);
 
-  // DIAN date constraints: same calendar year, max 365 days
+  // DIAN date constraints: same calendar year
   function applyDianDateConstraints() {
     const startEl = document.getElementById('start_date');
     const endEl = document.getElementById('end_date');
@@ -336,7 +574,6 @@
     const startYear = startVal.slice(0, 4);
     endEl.min = `${startYear}-01-01`;
     endEl.max = `${startYear}-12-31`;
-    // If end date is in a different year, reset it to last day of start's year
     if (endEl.value && endEl.value.slice(0, 4) !== startYear) {
       endEl.value = `${startYear}-12-31`;
     }
@@ -364,6 +601,8 @@
   const progressSection = document.getElementById('progressSection');
   const downloadSection = document.getElementById('downloadSection');
   const logBox = document.getElementById('logBox');
+  const pasaloBlock = document.getElementById('pasaloBlock');
+  const pasaloMinutes = document.getElementById('pasaloMinutes');
 
   function addLog(msg) {
     const line = document.createElement('div');
@@ -376,6 +615,11 @@
     document.getElementById('progressFill').style.width = pct + '%';
     if (label) document.getElementById('stepLabel').textContent = label;
     if (counts) document.getElementById('progressCounts').textContent = counts;
+  }
+
+  function formatMinutes(m) {
+    if (m >= 1000) return (m / 60).toFixed(1).replace('.0', '') + ' h';
+    return m.toLocaleString('es-CO') + ' min';
   }
 
   let currentJobId = null;
@@ -427,7 +671,13 @@
       document.getElementById('successMsg').textContent =
         `¡Listo! ${d.ok ?? ''} documentos descargados. El ZIP se está guardando en tu carpeta de descargas.`;
 
-      // Auto-download: trigger immediately, no second click needed
+      // Show "pasalo" block with dynamic minutes estimation
+      const totalDocs = Number(d.ok ?? d.total ?? 0);
+      const minutesSaved = totalDocs * 5; // promedio 5 min/factura del flujo manual
+      pasaloMinutes.textContent = '~' + formatMinutes(minutesSaved);
+      pasaloBlock.style.display = 'block';
+
+      // Auto-download
       const a = document.createElement('a');
       a.href = `/api/jobs/${jobId}/download`;
       a.download = '';
@@ -456,6 +706,7 @@
     e.preventDefault();
     errorMsg.style.display = 'none';
     downloadSection.style.display = 'none';
+    pasaloBlock.style.display = 'none';
     logBox.innerHTML = '';
 
     const dateError = validateDianDates();
@@ -497,6 +748,25 @@
       startBtn.textContent = 'Iniciar descarga';
       progressSection.style.display = 'none';
     }
+  });
+
+  // "Pasalo" — copy link
+  const copyBtn = document.getElementById('copyLinkBtn');
+  const copyToast = document.getElementById('copyToast');
+  copyBtn.addEventListener('click', async () => {
+    const url = 'https://descargasdian.batutaai.com/login.html';
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = url;
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch {}
+      document.body.removeChild(ta);
+    }
+    copyToast.classList.add('bt-share-toast--visible');
+    setTimeout(() => copyToast.classList.remove('bt-share-toast--visible'), 2400);
   });
 </script>
 </body>
