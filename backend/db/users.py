@@ -15,15 +15,16 @@ async def create_user(
     password_hash: str,
     ip: Optional[str],
     user_agent: Optional[str],
+    erp: Optional[str] = None,
 ) -> int:
     row = conn.execute(
         """
         INSERT INTO web_users
-          (email, full_name, phone, organization, password_hash, ip, user_agent)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
+          (email, full_name, phone, organization, password_hash, ip, user_agent, erp)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         RETURNING id
         """,
-        (email, full_name, phone, organization, password_hash, ip, user_agent),
+        (email, full_name, phone, organization, password_hash, ip, user_agent, erp),
     ).fetchone()
     return row[0]
 
