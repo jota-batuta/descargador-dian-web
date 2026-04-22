@@ -1,0 +1,263 @@
+/*
+ * Batuta AI — brand tokens for DIAN Downloader Web
+ * Source: https://github.com/jota-batuta/batuta-flow/blob/main/src/index.css (verified 2026-04-21)
+ * The cobalto baton is load-bearing — never recolor, never apply gradients to the hand.
+ */
+
+:root {
+  --nocturno: hsl(230 36% 9%);
+  --noche-profunda: hsl(227 30% 13%);
+  --hover-bg: hsl(229 36% 16%);
+  --bruma-clara: hsl(225 36% 95%);
+  --bruma: hsl(224 18% 71%);
+  --bruma-terciaria: hsl(226 17% 50%);
+  --grafito: hsl(228 23% 19%);
+  --grafito-fuerte: hsl(226 21% 29%);
+  --cobalto: hsl(232 100% 65%);
+  --cobalto-glow: hsl(232 100% 70%);
+  --cobalto-soft: hsl(232 100% 65% / 0.12);
+  --esmeralda: hsl(158 64% 52%);
+  --esmeralda-soft: hsl(158 64% 52% / 0.12);
+  --terracota: hsl(16 56% 59%);
+  --amber-warn: hsl(43 90% 58%);
+  --amber-warn-soft: hsl(43 90% 58% / 0.12);
+  --danger: hsl(0 75% 62%);
+  --danger-soft: hsl(0 75% 62% / 0.12);
+  --radius: 0.5rem;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+* , *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  font-family: var(--font-sans);
+  background: var(--nocturno);
+  color: var(--bruma-clara);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: var(--cobalto-soft);
+  color: var(--bruma-clara);
+}
+
+a { color: var(--cobalto); text-decoration: none; }
+a:hover { color: var(--cobalto-glow); }
+
+/* ── Brand lockup (logo + wordmark) ───────────────────────── */
+.bt-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--bruma-clara);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  transition: transform 0.15s ease;
+}
+.bt-brand:hover { color: var(--bruma-clara); }
+.bt-brand img {
+  width: 32px;
+  height: 32px;
+  transition: transform 0.15s ease;
+}
+.bt-brand:hover img { transform: translateY(-2px); }
+.bt-brand .bt-brand-accent { color: var(--cobalto); }
+
+/* ── Surfaces ─────────────────────────────────────────────── */
+.bt-card {
+  background: var(--noche-profunda);
+  border: 1px solid var(--grafito);
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  padding: 40px 36px;
+  width: 100%;
+}
+
+.bt-header {
+  background: hsl(230 36% 9% / 0.85);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--grafito);
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+/* ── Form primitives ──────────────────────────────────────── */
+.bt-label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--bruma);
+  margin-bottom: 8px;
+  margin-top: 20px;
+  letter-spacing: 0.01em;
+}
+.bt-label:first-child { margin-top: 0; }
+
+.bt-input,
+.bt-textarea {
+  width: 100%;
+  padding: 11px 14px;
+  background: var(--nocturno);
+  border: 1.5px solid var(--grafito);
+  border-radius: var(--radius);
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: var(--bruma-clara);
+  transition: border-color 0.15s, box-shadow 0.15s;
+  outline: none;
+}
+.bt-input::placeholder,
+.bt-textarea::placeholder { color: var(--bruma-terciaria); }
+.bt-input:focus,
+.bt-textarea:focus {
+  border-color: var(--cobalto);
+  box-shadow: 0 0 0 3px var(--cobalto-soft);
+}
+.bt-input.input-error { border-color: var(--danger); }
+.bt-textarea { resize: vertical; min-height: 72px; }
+
+.bt-hint {
+  font-size: 0.78rem;
+  color: var(--bruma-terciaria);
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+/* ── Buttons ──────────────────────────────────────────────── */
+.bt-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 20px;
+  border-radius: var(--radius);
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.05s;
+  text-decoration: none;
+}
+.bt-btn:active { transform: translateY(1px); }
+.bt-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.bt-btn-primary {
+  background: var(--cobalto);
+  color: #fff;
+  width: 100%;
+  margin-top: 28px;
+  padding: 13px;
+  font-size: 1rem;
+  font-weight: 700;
+}
+.bt-btn-primary:hover { background: var(--cobalto-glow); }
+
+.bt-btn-success {
+  background: var(--esmeralda);
+  color: var(--nocturno);
+  padding: 13px 36px;
+  font-weight: 700;
+}
+.bt-btn-success:hover { filter: brightness(1.08); }
+
+.bt-btn-ghost {
+  background: transparent;
+  border: 1.5px solid var(--grafito);
+  color: var(--bruma);
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.bt-btn-ghost:hover {
+  border-color: var(--cobalto);
+  color: var(--cobalto);
+}
+
+/* ── Badges / chips ───────────────────────────────────────── */
+.bt-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--cobalto-soft);
+  color: var(--cobalto);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--cobalto);
+  letter-spacing: 0.01em;
+}
+
+/* ── Alerts ───────────────────────────────────────────────── */
+.bt-alert-error {
+  background: var(--danger-soft);
+  border: 1px solid var(--danger);
+  color: hsl(0 80% 78%);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  font-size: 0.88rem;
+  margin-top: 16px;
+}
+
+.bt-alert-warning {
+  background: var(--amber-warn-soft);
+  border: 1px solid var(--amber-warn);
+  color: hsl(43 90% 75%);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  font-size: 0.82rem;
+}
+
+/* ── Progress bar ─────────────────────────────────────────── */
+.bt-progress-wrap {
+  background: var(--grafito);
+  border-radius: 99px;
+  height: 10px;
+  overflow: hidden;
+}
+.bt-progress-fill {
+  background: linear-gradient(90deg, var(--cobalto), var(--cobalto-glow));
+  height: 100%;
+  width: 0%;
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+/* ── Glow accents (optional, for auth cards) ──────────────── */
+.bt-hero-glow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse at 50% 20%, hsl(232 100% 65% / 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, hsl(232 100% 65% / 0.05) 0%, transparent 40%);
+}
+.bt-above-glow { position: relative; z-index: 1; }
+
+/* ── Utility ──────────────────────────────────────────────── */
+.bt-center-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 0;
+}
+
+.bt-footer-link {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 0.87rem;
+  color: var(--bruma);
+}
+.bt-footer-link a { color: var(--cobalto); font-weight: 600; }
+.bt-footer-link a:hover { color: var(--cobalto-glow); }

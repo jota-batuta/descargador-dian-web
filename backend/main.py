@@ -40,10 +40,21 @@ app.include_router(health_routes.router)
 app.include_router(auth_routes.router)
 app.include_router(jobs_routes.router)
 
+app.mount(
+    "/static",
+    StaticFiles(directory=FRONTEND_DIR / "static"),
+    name="static",
+)
+
 
 @app.get("/")
 def root():
     return RedirectResponse(url="/login.html")
+
+
+@app.get("/favicon.svg", include_in_schema=False)
+def favicon_svg():
+    return FileResponse(FRONTEND_DIR / "static" / "favicon.svg")
 
 
 @app.get("/login.html", include_in_schema=False)
