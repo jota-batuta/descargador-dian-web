@@ -3,108 +3,65 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Iniciar sesión — Dian Downloader Batuta</title>
+  <title>Iniciar sesión — Batuta AI · DIAN Downloader</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/brand.css">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      background: #f0f2f5;
-      min-height: 100vh;
+    .auth-card { max-width: 440px; }
+    .auth-header {
+      text-align: center;
+      margin-bottom: 28px;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
+      gap: 18px;
     }
-    .card {
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 24px rgba(0,0,0,.10);
-      padding: 40px 36px;
-      width: 100%;
-      max-width: 420px;
-    }
-    .brand {
-      text-align: center;
-      margin-bottom: 32px;
-    }
-    .brand h1 {
-      font-size: 1.5rem;
+    .auth-title {
+      font-size: 1.25rem;
       font-weight: 700;
-      color: #111;
-      letter-spacing: -.5px;
+      color: var(--bruma-clara);
+      letter-spacing: -0.01em;
     }
-    .brand span { color: #E94560; }
-    label {
-      display: block;
-      font-size: .85rem;
-      font-weight: 600;
-      color: #444;
-      margin-bottom: 6px;
-      margin-top: 18px;
-    }
-    input {
-      width: 100%;
-      padding: 10px 14px;
-      border: 1.5px solid #d1d5db;
-      border-radius: 8px;
-      font-size: 1rem;
-      transition: border-color .15s;
-      outline: none;
-    }
-    input:focus { border-color: #E94560; }
-    .btn {
-      display: block;
-      width: 100%;
-      margin-top: 28px;
-      padding: 12px;
-      background: #E94560;
-      color: #fff;
-      font-size: 1rem;
-      font-weight: 700;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background .15s;
-    }
-    .btn:hover { background: #c73550; }
-    .btn:disabled { background: #aaa; cursor: not-allowed; }
-    .footer-link {
-      text-align: center;
-      margin-top: 20px;
-      font-size: .87rem;
-      color: #666;
-    }
-    .footer-link a { color: #E94560; text-decoration: none; font-weight: 600; }
-    .error-msg {
-      background: #fff0f2;
-      border: 1.5px solid #E94560;
-      color: #c00;
-      border-radius: 8px;
-      padding: 10px 14px;
-      font-size: .88rem;
-      margin-top: 16px;
-      display: none;
+    .auth-subtitle {
+      font-size: 0.88rem;
+      color: var(--bruma);
+      margin-top: 4px;
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="brand">
-      <h1>Dian Downloader <span>Batuta</span></h1>
+  <div class="bt-hero-glow"></div>
+  <div class="bt-center-screen bt-above-glow">
+    <div class="bt-card auth-card">
+      <div class="auth-header">
+        <a href="https://www.batutaai.com" target="_blank" rel="noopener"
+           class="bt-brand" aria-label="Batuta AI — sitio principal">
+          <img src="/static/logo.svg" alt="" width="32" height="32">
+          <span>Batuta <span class="bt-brand-accent">AI</span></span>
+        </a>
+        <div>
+          <div class="auth-title">Iniciar sesión</div>
+          <div class="auth-subtitle">DIAN Downloader</div>
+        </div>
+      </div>
+
+      <form id="loginForm">
+        <label class="bt-label" for="email">Correo electrónico</label>
+        <input class="bt-input" type="email" id="email" name="email" required autocomplete="email" placeholder="tu@empresa.com">
+
+        <label class="bt-label" for="password">Contraseña</label>
+        <input class="bt-input" type="password" id="password" name="password" required placeholder="••••••••">
+
+        <button class="bt-btn bt-btn-primary" type="submit" id="submitBtn">Iniciar sesión</button>
+      </form>
+
+      <div class="bt-alert-error" id="errorMsg" style="display:none"></div>
+
+      <p class="bt-footer-link">¿Aún no tienes cuenta? <a href="/register.html">Regístrate gratis</a></p>
     </div>
-
-    <form id="loginForm">
-      <label for="email">Correo electrónico</label>
-      <input type="email" id="email" name="email" required autocomplete="email" placeholder="tu@empresa.com">
-
-      <label for="password">Contraseña</label>
-      <input type="password" id="password" name="password" required placeholder="••••••••">
-
-      <button class="btn" type="submit" id="submitBtn">Iniciar sesión</button>
-    </form>
-
-    <div class="error-msg" id="errorMsg"></div>
-
-    <p class="footer-link">¿Aún no tienes cuenta? <a href="/register.html">Regístrate gratis</a></p>
   </div>
 
   <script>

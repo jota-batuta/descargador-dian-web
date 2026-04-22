@@ -1,6 +1,16 @@
-# Dian Downloader Batuta — Web Service (CLAUDE.md)
+# Batuta AI · DIAN Downloader — Web Service (CLAUDE.md)
 
-Fork del proyecto desktop `DESCARGADOR DIAN WINDOWS` expuesto como servicio web.
+Fork del proyecto desktop `DESCARGADOR DIAN WINDOWS` expuesto como servicio web, desplegado en `descargasdian.batutaai.com`.
+
+## Visual identity
+
+Todo cambio visual (paleta, tipografía, logo, layout) debe seguir [DESIGN.md](./DESIGN.md). El sistema hereda de `batuta-flow` (Batuta AI canónico). Reglas duras:
+
+- El baton del logo es siempre cobalto `#4D5CFF` — no recolorear.
+- El logo en cada header enlaza a `https://www.batutaai.com` en nueva pestaña.
+- Tokens viven en `frontend/static/brand.css`; no hardcodear hex en HTML.
+- Dark-mode first — no introducir light-mode sin alinear con el sistema padre.
+- Inter + JetBrains Mono vía Google Fonts; no añadir familias sin actualizar `DESIGN.md`.
 
 ## Stack
 
@@ -61,3 +71,18 @@ No crear SPEC.md ni CLAUDE.md en la raíz para features individuales.
 - Jobs: aislados por usuario (`job.user_email`); un usuario no puede ver jobs de otro
 - Cleanup: temp dirs se borran automáticamente 2h después de completar
 - `dian_core/` y `dian_processes/`: NO modificar — son el núcleo probado del desktop
+
+## Mandatory Skills (Batuta ecosystem)
+
+Este repo hereda las reglas del ecosistema Batuta AI. Invocar cuando aplique:
+
+- **`research-first-dev`** — antes de escribir código que importe cualquier librería/API externa no verificada esta sesión. Añadir comentario `# Source: <url> (verified YYYY-MM-DD, <lib>@<version>)` en el import site.
+- **`notion-kb-workflow`** — `--read` al inicio de sesión, `--append` al cierre de sesión productiva.
+- **`batuta-project-hygiene`** — `mode=feature-init <nombre>` cuando el operador describa una nueva feature. No crear `CLAUDE.md`/`SPEC.md` nuevos manualmente.
+
+## Commits & PRs
+
+- Commits atómicos, mensaje en inglés explicando el *por qué*. Sin `Co-Authored-By: Claude`.
+- Ramas: `feature/<name>` para features, `fix/<name>` para bugs.
+- PRs abiertos vía `gh pr create`. Merge manual por jota-batuta salvo autorización explícita.
+- Nunca `git add -A`. Añadir archivos por nombre.

@@ -3,142 +3,139 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Descargar — Dian Downloader Batuta</title>
+  <title>Descargar — Batuta AI · DIAN Downloader</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/brand.css">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      background: #f0f2f5;
-      min-height: 100vh;
-    }
-    header {
-      background: #fff;
-      border-bottom: 1.5px solid #e5e7eb;
-      padding: 0 32px;
+    .user-info {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      height: 56px;
+      gap: 16px;
+      font-size: 0.87rem;
+      color: var(--bruma);
     }
-    .brand { font-size: 1.1rem; font-weight: 700; color: #111; }
-    .brand span { color: #E94560; }
-    .user-info { display: flex; align-items: center; gap: 20px; font-size: .87rem; color: #555; }
-    .user-info strong { color: #111; }
-    .trial-chip {
-      background: #fff0f2; color: #E94560; font-weight: 700;
-      padding: 3px 10px; border-radius: 99px; font-size: .78rem;
-      border: 1.5px solid #E94560;
-    }
-    .logout-btn {
-      background: none; border: 1.5px solid #d1d5db; color: #555;
-      padding: 5px 14px; border-radius: 8px; cursor: pointer; font-size: .85rem;
-      transition: border-color .15s;
-    }
-    .logout-btn:hover { border-color: #E94560; color: #E94560; }
+    .user-info strong { color: var(--bruma-clara); font-weight: 600; }
 
     main {
-      max-width: 560px;
+      max-width: 620px;
       margin: 40px auto;
-      padding: 0 16px;
+      padding: 0 20px;
+      position: relative;
+      z-index: 1;
+    }
+    .app-card { padding: 32px 36px; }
+    .app-card h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+      color: var(--bruma-clara);
+      letter-spacing: -0.01em;
     }
 
-    .card {
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 24px rgba(0,0,0,.08);
-      padding: 36px;
-    }
-    .card h2 { font-size: 1.15rem; font-weight: 700; margin-bottom: 24px; color: #111; }
-
-    label { display: block; font-size: .85rem; font-weight: 600; color: #444; margin-bottom: 6px; margin-top: 18px; }
-    label:first-child { margin-top: 0; }
-    input, textarea {
-      width: 100%;
-      padding: 10px 14px;
-      border: 1.5px solid #d1d5db;
-      border-radius: 8px;
-      font-size: .95rem;
-      transition: border-color .15s;
-      outline: none;
-      font-family: inherit;
-    }
-    input:focus, textarea:focus { border-color: #E94560; }
-    textarea { resize: vertical; min-height: 70px; }
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
-    .hint { font-size: .78rem; color: #888; margin-top: 4px; }
-    .dian-limit-hint { color: #b45309; background: #fef3c7; border: 1px solid #fde68a; border-radius: 6px; padding: 7px 10px; margin-top: 8px; }
-    input.input-error { border-color: #E94560; }
-
-    .btn-primary {
-      display: block; width: 100%; margin-top: 28px; padding: 13px;
-      background: #E94560; color: #fff; font-size: 1rem; font-weight: 700;
-      border: none; border-radius: 8px; cursor: pointer; transition: background .15s;
+    .dian-limit-hint {
+      color: hsl(43 90% 75%);
+      background: var(--amber-warn-soft);
+      border: 1px solid var(--amber-warn);
+      border-radius: var(--radius);
+      padding: 8px 12px;
+      margin-top: 10px;
+      font-size: 0.78rem;
+      line-height: 1.5;
     }
-    .btn-primary:hover { background: #c73550; }
-    .btn-primary:disabled { background: #aaa; cursor: not-allowed; }
 
     /* Progress section */
     #progressSection { margin-top: 28px; display: none; }
     .step-label {
-      font-size: .88rem; font-weight: 600; color: #555; margin-bottom: 10px;
-    }
-    .progress-bar-wrap {
-      background: #e5e7eb; border-radius: 99px; height: 10px; overflow: hidden;
-    }
-    .progress-bar-fill {
-      background: #E94560; height: 100%; width: 0%; border-radius: 99px;
-      transition: width .4s ease;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--bruma);
+      margin-bottom: 10px;
     }
     .progress-counts {
-      font-size: .82rem; color: #666; margin-top: 8px;
+      font-size: 0.82rem;
+      color: var(--bruma-terciaria);
+      margin-top: 8px;
+      font-family: var(--font-mono);
     }
     .log-box { display: none; }
 
     /* Download button */
     #downloadSection { margin-top: 24px; display: none; text-align: center; }
-    .btn-download {
-      display: inline-block; padding: 13px 36px;
-      background: #16a34a; color: #fff; font-size: 1rem; font-weight: 700;
-      border: none; border-radius: 8px; cursor: pointer; transition: background .15s;
-      text-decoration: none;
-    }
-    .btn-download:hover { background: #15803d; }
-    .success-msg { font-size: .88rem; color: #16a34a; font-weight: 600; margin-bottom: 12px; }
-
-    /* Error */
-    .error-msg {
-      background: #fff0f2; border: 1.5px solid #E94560; color: #c00;
-      border-radius: 8px; padding: 10px 14px; font-size: .88rem; margin-top: 16px; display: none;
+    .success-msg {
+      font-size: 0.9rem;
+      color: var(--esmeralda);
+      font-weight: 600;
+      margin-bottom: 14px;
     }
 
     /* Help toggle button */
     .help-toggle {
-      background: none; border: 1px solid #d1d5db; color: #E94560;
-      font-size: .73rem; font-weight: 600; padding: 2px 8px; border-radius: 6px;
-      cursor: pointer; margin-left: 8px; vertical-align: middle;
-      transition: background .15s, color .15s;
+      background: transparent;
+      border: 1px solid var(--grafito);
+      color: var(--cobalto);
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-left: 10px;
+      vertical-align: middle;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
     }
-    .help-toggle:hover { background: #fff0f2; border-color: #E94560; }
+    .help-toggle:hover {
+      background: var(--cobalto-soft);
+      border-color: var(--cobalto);
+      color: var(--cobalto-glow);
+    }
 
     /* Contextual guide */
     .token-guide {
-      background: #f8f9fa; border: 1.5px solid #e5e7eb;
-      border-radius: 10px; padding: 16px 18px; margin-bottom: 10px;
+      background: var(--nocturno);
+      border: 1px solid var(--grafito);
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-bottom: 10px;
     }
-    .guide-title { font-size: .88rem; font-weight: 700; color: #111; margin-bottom: 10px; }
-    .guide-steps { padding-left: 18px; font-size: .82rem; color: #444; }
-    .guide-steps li { margin-bottom: 5px; line-height: 1.5; }
+    .guide-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--bruma-clara);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-family: var(--font-mono);
+    }
+    .guide-steps {
+      padding-left: 18px;
+      font-size: 0.82rem;
+      color: var(--bruma);
+      line-height: 1.55;
+    }
+    .guide-steps li { margin-bottom: 5px; }
+    .guide-steps strong { color: var(--bruma-clara); }
 
-    /* Email mockup illustration */
+    /* Email mockup — kept light because it mimics a real Gmail screenshot */
     .guide-illustration { margin: 14px 0 10px; }
     .email-mockup {
-      background: #fff; border: 1.5px solid #d1d5db; border-radius: 8px;
-      overflow: hidden; font-size: .78rem;
+      background: #fff;
+      border: 1px solid var(--grafito);
+      border-radius: 8px;
+      overflow: hidden;
+      font-size: 0.78rem;
+      color: #111;
     }
     .email-meta {
-      background: #f3f4f6; border-bottom: 1px solid #e5e7eb;
-      padding: 7px 12px; display: flex; flex-direction: column; gap: 2px;
+      background: #f3f4f6;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 7px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
     }
     .email-from { color: #555; }
     .email-subject { font-weight: 700; color: #111; }
@@ -146,52 +143,76 @@
 
     .btn-green-wrap { position: relative; display: inline-block; }
     .btn-green {
-      display: inline-block; background: #16a34a; color: #fff;
-      font-size: .8rem; font-weight: 700; padding: 7px 18px;
-      border-radius: 6px; cursor: default;
+      display: inline-block;
+      background: #16a34a;
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 7px 18px;
+      border-radius: 6px;
+      cursor: default;
     }
     .context-menu {
-      position: absolute; top: 100%; left: 0; margin-top: 4px;
-      background: #fff; border: 1px solid #d1d5db; border-radius: 6px;
-      box-shadow: 0 4px 16px rgba(0,0,0,.15); z-index: 10; min-width: 200px;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: 4px;
+      background: #fff;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.15);
+      z-index: 10;
+      min-width: 200px;
       overflow: hidden;
     }
     .ctx-item {
-      padding: 6px 14px; font-size: .78rem; color: #333;
+      padding: 6px 14px;
+      font-size: 0.78rem;
+      color: #333;
       border-bottom: 1px solid #f3f4f6;
     }
     .ctx-item:last-child { border-bottom: none; }
     .ctx-divider { border-top: 1px solid #e5e7eb; }
     .ctx-highlight {
-      background: #dbeafe; color: #1d4ed8; font-weight: 700;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-weight: 700;
     }
 
     .guide-warning {
-      font-size: .78rem; color: #b45309; background: #fffbeb;
-      border: 1px solid #fcd34d; border-radius: 6px;
-      padding: 6px 10px; margin-top: 10px;
+      font-size: 0.78rem;
+      color: hsl(43 90% 75%);
+      background: var(--amber-warn-soft);
+      border: 1px solid var(--amber-warn);
+      border-radius: 6px;
+      padding: 8px 11px;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
 
-<header>
-  <span class="brand">Dian Downloader <span>Batuta</span></span>
+<header class="bt-header">
+  <a href="https://www.batutaai.com" target="_blank" rel="noopener"
+     class="bt-brand" aria-label="Batuta AI — sitio principal">
+    <img src="/static/logo.svg" alt="" width="28" height="28">
+    <span>Batuta <span class="bt-brand-accent">AI</span></span>
+  </a>
   <div class="user-info">
     <span>Hola, <strong id="userName">...</strong></span>
-    <span class="trial-chip" id="trialDays">...</span>
+    <span class="bt-chip" id="trialDays">...</span>
     <form action="/auth/logout" method="post" style="margin:0">
-      <button class="logout-btn" type="submit">Cerrar sesión</button>
+      <button class="bt-btn bt-btn-ghost" type="submit">Cerrar sesión</button>
     </form>
   </div>
 </header>
 
 <main>
-  <div class="card">
+  <div class="bt-card app-card">
     <h2>Nueva descarga de documentos DIAN</h2>
 
     <form id="jobForm">
-      <label for="token_url">
+      <label class="bt-label" for="token_url">
         Token URL del portal DIAN
         <button type="button" class="help-toggle" onclick="toggleGuide()" id="helpBtn">
           ¿Cómo obtenerlo?
@@ -235,38 +256,38 @@
         <p class="guide-warning">⚠ El token caduca en ~60 minutos. Si expira, solicita uno nuevo a DIAN y pégalo aquí.</p>
       </div>
 
-      <textarea id="token_url" name="token_url" required rows="2"
+      <textarea class="bt-textarea" id="token_url" name="token_url" required rows="2"
         placeholder="https://catalogo-vpfe.dian.gov.co/...?token=..."></textarea>
-      <p class="hint">Copia el token desde tu correo DIAN. Vigencia ~60 min.</p>
+      <p class="bt-hint">Copia el token desde tu correo DIAN. Vigencia ~60 min.</p>
 
       <div class="row">
         <div>
-          <label for="start_date">Fecha inicio</label>
-          <input type="date" id="start_date" name="start_date" required>
+          <label class="bt-label" for="start_date">Fecha inicio</label>
+          <input class="bt-input" type="date" id="start_date" name="start_date" required>
         </div>
         <div>
-          <label for="end_date">Fecha fin</label>
-          <input type="date" id="end_date" name="end_date" required>
+          <label class="bt-label" for="end_date">Fecha fin</label>
+          <input class="bt-input" type="date" id="end_date" name="end_date" required>
         </div>
       </div>
-      <p class="hint dian-limit-hint">
+      <p class="dian-limit-hint">
         ⚠ Limitación DIAN: el rango debe estar dentro del mismo año calendario (ej. 01/01/2025 – 31/12/2025).
         Para descargar varios años, realiza una descarga por año.
       </p>
 
-      <label for="empresa">Empresa (opcional)</label>
-      <input type="text" id="empresa" name="empresa" placeholder="Mi Empresa SAS">
-      <p class="hint">Se usará como nombre del archivo ZIP resultante.</p>
+      <label class="bt-label" for="empresa">Empresa (opcional)</label>
+      <input class="bt-input" type="text" id="empresa" name="empresa" placeholder="Mi Empresa SAS">
+      <p class="bt-hint">Se usará como nombre del archivo ZIP resultante.</p>
 
-      <button class="btn-primary" type="submit" id="startBtn">Iniciar descarga</button>
+      <button class="bt-btn bt-btn-primary" type="submit" id="startBtn">Iniciar descarga</button>
     </form>
 
-    <div class="error-msg" id="errorMsg"></div>
+    <div class="bt-alert-error" id="errorMsg" style="display:none"></div>
 
     <div id="progressSection">
       <div class="step-label" id="stepLabel">Iniciando...</div>
-      <div class="progress-bar-wrap">
-        <div class="progress-bar-fill" id="progressFill"></div>
+      <div class="bt-progress-wrap">
+        <div class="bt-progress-fill" id="progressFill"></div>
       </div>
       <div class="progress-counts" id="progressCounts"></div>
       <div class="log-box" id="logBox"></div>
