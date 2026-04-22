@@ -23,6 +23,8 @@ CREATE TABLE IF NOT EXISTS web_users (
 CREATE INDEX IF NOT EXISTS web_users_email_idx ON web_users (email);
 CREATE INDEX IF NOT EXISTS web_users_trial_idx  ON web_users (trial_expires);
 
+ALTER TABLE web_users ADD COLUMN IF NOT EXISTS erp TEXT;
+
 CREATE TABLE IF NOT EXISTS download_log (
   id           BIGSERIAL    PRIMARY KEY,
   user_email   CITEXT       NOT NULL REFERENCES web_users(email) ON DELETE CASCADE,

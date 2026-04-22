@@ -58,6 +58,7 @@ async def register(
     organization: Annotated[str, Form()],
     password: Annotated[str, Form()],
     password_confirm: Annotated[str, Form()],
+    erp: Annotated[str | None, Form()] = None,
     db=Depends(get_db),
 ):
     if password != password_confirm:
@@ -73,7 +74,7 @@ async def register(
     ua = request.headers.get("user-agent")
     pw_hash = hash_password(password)
 
-    user_id = await create_user(db, email, full_name, phone, organization, pw_hash, ip, ua)
+    user_id = await create_user(db, email, full_name, phone, organization, pw_hash, ip, ua, erp)
 
     asyncio.create_task(send_welcome_background(email, full_name))
 

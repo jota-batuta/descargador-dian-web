@@ -7,7 +7,7 @@
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/brand.css">
   <style>
     .auth-card { max-width: 480px; }
@@ -17,25 +17,22 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 16px;
+      gap: 14px;
     }
-    .auth-title {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--bruma-clara);
-      letter-spacing: -0.01em;
-    }
-    .auth-subtitle {
-      font-size: 0.88rem;
+    .auth-intro {
+      font-size: 0.92rem;
       color: var(--bruma);
-      margin: 4px 0 12px;
+      line-height: 1.55;
+      max-width: 420px;
+      margin: 0 auto 4px;
     }
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   </style>
 </head>
 <body>
   <div class="bt-hero-glow"></div>
-  <div class="bt-center-screen bt-above-glow">
+
+  <div class="bt-center-screen bt-above-glow" style="padding: 48px 16px 24px;">
     <div class="bt-card auth-card">
       <div class="auth-header">
         <a href="https://www.batutaai.com" target="_blank" rel="noopener"
@@ -43,10 +40,10 @@
           <img src="/static/logo.svg" alt="" width="32" height="32">
           <span>Batuta <span class="bt-brand-accent">AI</span></span>
         </a>
+        <div class="bt-eyebrow" style="margin-bottom:0">Registro · prueba 120 días</div>
         <div>
-          <div class="auth-title">Crear cuenta</div>
-          <div class="auth-subtitle">DIAN Downloader</div>
-          <span class="bt-chip">Prueba gratuita 120 días</span>
+          <div class="bt-heading-md" style="margin-bottom:6px">Crea tu cuenta gratis.</div>
+          <p class="auth-intro">120 días de acceso completo. Sin tarjeta. Sin compromiso. Descarga todos los documentos DIAN de tu empresa en minutos.</p>
         </div>
       </div>
 
@@ -68,6 +65,22 @@
           </div>
         </div>
 
+        <label class="bt-label" for="erp">¿Qué ERP usas?</label>
+        <select class="bt-select" id="erp" name="erp" required>
+          <option value="" disabled selected>Elegí uno</option>
+          <option value="WorldOffice">WorldOffice</option>
+          <option value="Siigo">Siigo</option>
+          <option value="Helisa">Helisa</option>
+          <option value="Contapyme">Contapyme</option>
+          <option value="Alegra">Alegra</option>
+          <option value="ContaFacil">ContaFácil</option>
+          <option value="ICG Manager">ICG Manager</option>
+          <option value="SAP Business One">SAP Business One</option>
+          <option value="Otro">Otro</option>
+          <option value="Ninguno">Ninguno</option>
+        </select>
+        <p class="bt-hint">Lo usamos para priorizar integraciones y mejorar el formato de los archivos descargados.</p>
+
         <label class="bt-label" for="password">Contraseña</label>
         <input class="bt-input" type="password" id="password" name="password" required minlength="8" placeholder="Mínimo 8 caracteres">
         <p class="bt-hint">Al menos 8 caracteres</p>
@@ -83,6 +96,34 @@
       <p class="bt-footer-link">¿Ya tienes cuenta? <a href="/login.html">Inicia sesión</a></p>
     </div>
   </div>
+
+  <!-- Ecosistema compacto -->
+  <section class="bt-landing-section bt-landing-section--tight bt-landing-section--divided bt-above-glow">
+    <div class="bt-eyebrow">Ecosistema Batuta</div>
+    <h2 class="bt-heading-lg">Esto es apenas el comienzo.</h2>
+    <p class="bt-lead" style="margin-bottom:28px">DIAN Downloader es nuestro primer producto self-serve. Detrás hay un ecosistema completo para back-office.</p>
+    <div class="bt-ecosystem-grid">
+      <a class="bt-ecosystem-card" href="https://www.batutaai.com" target="_blank" rel="noopener">
+        <span class="bt-ecosystem-card-tag">Plataforma · Agentes</span>
+        <div class="bt-ecosystem-card-title">Batuta AI</div>
+        <p class="bt-ecosystem-card-body">Agentes autónomos para back-office de LATAM: conciliación bancaria, clasificación de facturas, validación tributaria. Ejecutan los procesos que ya están definidos.</p>
+        <span class="bt-ecosystem-card-cta">Conocer la plataforma →</span>
+      </a>
+      <a class="bt-ecosystem-card" href="https://advisory.batutaai.com" target="_blank" rel="noopener">
+        <span class="bt-ecosystem-card-tag">Marca hermana · Método</span>
+        <div class="bt-ecosystem-card-title">Batuta Advisory</div>
+        <p class="bt-ecosystem-card-body">Diseñamos el proceso. Batuta lo ejecuta. Advisory cubre diagnóstico financiero, elección de ERP y políticas por escrito — primero el método, después la automatización.</p>
+        <span class="bt-ecosystem-card-cta">Ir a Advisory →</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer minimal -->
+  <footer class="bt-footer-minimal">
+    Batuta AI SAS · <a href="https://www.batutaai.com" target="_blank" rel="noopener">www.batutaai.com</a>
+    · <a href="https://www.batutaai.com/seguridad" target="_blank" rel="noopener">Seguridad</a>
+    · <a href="https://www.batutaai.com/empresa/manifiesto" target="_blank" rel="noopener">Manifiesto</a>
+  </footer>
 
   <script>
     const form = document.getElementById('regForm');
