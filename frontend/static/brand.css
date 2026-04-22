@@ -261,3 +261,462 @@ a:hover { color: var(--cobalto-glow); }
 }
 .bt-footer-link a { color: var(--cobalto); font-weight: 600; }
 .bt-footer-link a:hover { color: var(--cobalto-glow); }
+
+/* ═══════════════════════════════════════════════════════════
+   Landing primitives — hero, pillars, steps, mockups, ecosystem
+   (copy of batuta-flow/src/sections/home patterns, vanilla HTML+CSS)
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Sticky brand header for landing pages ────────────────── */
+.bt-landing-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: hsl(230 36% 9% / 0.85);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--grafito);
+  padding: 14px 24px;
+}
+.bt-landing-header-inner {
+  max-width: 1040px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+/* ── Section layout ───────────────────────────────────────── */
+.bt-landing-section {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 72px 24px;
+  position: relative;
+  z-index: 1;
+}
+.bt-landing-section--tight { padding: 48px 24px; }
+.bt-landing-section--divided {
+  border-top: 1px solid var(--grafito);
+}
+
+.bt-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cobalto);
+  margin-bottom: 14px;
+}
+
+.bt-heading-xl {
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--bruma-clara);
+  line-height: 1.1;
+  margin-bottom: 18px;
+}
+.bt-heading-lg {
+  font-size: clamp(1.5rem, 3.5vw, 1.85rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--bruma-clara);
+  line-height: 1.2;
+  margin-bottom: 14px;
+}
+.bt-heading-md {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--bruma-clara);
+  letter-spacing: -0.005em;
+  margin-bottom: 10px;
+}
+
+.bt-lead {
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: var(--bruma);
+  max-width: 640px;
+}
+
+.bt-kicker {
+  font-size: 0.95rem;
+  color: var(--cobalto-glow);
+  font-weight: 500;
+  margin-top: 12px;
+}
+
+/* ── Hero — two columns on desktop ────────────────────────── */
+.bt-hero {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 48px;
+  align-items: center;
+}
+@media (min-width: 900px) {
+  .bt-hero { grid-template-columns: 1.1fr 1fr; gap: 64px; }
+}
+
+.bt-metric-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 24px 0;
+}
+.bt-metric-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--noche-profunda);
+  border: 1px solid var(--grafito);
+  border-radius: 99px;
+  padding: 8px 14px;
+  font-size: 0.82rem;
+  color: var(--bruma-clara);
+  font-weight: 500;
+}
+.bt-metric-chip strong { color: var(--cobalto); font-weight: 700; }
+
+.bt-hero-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+/* ── Mockup window (shared across hero dashboard + step illustrations) ── */
+.bt-mockup-window {
+  background: var(--noche-profunda);
+  border: 1px solid var(--grafito);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+}
+.bt-mockup-chrome {
+  background: hsl(227 30% 10%);
+  border-bottom: 1px solid var(--grafito);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--bruma-terciaria);
+}
+.bt-mockup-chrome-dots {
+  display: flex;
+  gap: 5px;
+  flex-shrink: 0;
+}
+.bt-mockup-chrome-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--grafito-fuerte);
+}
+.bt-mockup-chrome-title { flex-grow: 1; }
+.bt-mockup-chrome-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--esmeralda);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.6rem;
+}
+.bt-mockup-chrome-status::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--esmeralda);
+  animation: bt-pulse 2s ease-in-out infinite;
+}
+@keyframes bt-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}
+.bt-mockup-body { padding: 18px 20px; }
+
+/* Generic form inside a mockup (used in DIAN portal mockup) */
+.bt-mockup-form-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-size: 0.82rem;
+  color: var(--bruma);
+}
+.bt-mockup-form-row label { min-width: 170px; color: var(--bruma-terciaria); }
+.bt-mockup-form-row .bt-mockup-input {
+  flex: 1;
+  background: var(--nocturno);
+  border: 1px solid var(--grafito);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--bruma-clara);
+}
+.bt-mockup-radio { display: flex; align-items: center; gap: 10px; font-size: 0.82rem; color: var(--bruma); }
+.bt-mockup-radio-dot {
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid var(--grafito-fuerte);
+  border-radius: 50%;
+  position: relative;
+}
+.bt-mockup-radio-dot--active {
+  border-color: var(--cobalto);
+}
+.bt-mockup-radio-dot--active::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  background: var(--cobalto);
+}
+.bt-mockup-btn-primary {
+  background: var(--cobalto);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-weight: 600;
+  font-size: 0.82rem;
+  font-family: inherit;
+  cursor: default;
+}
+
+/* ── Pillars / 4-questions grid ───────────────────────────── */
+.bt-pillar-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px;
+}
+@media (min-width: 720px) {
+  .bt-pillar-grid--3 { grid-template-columns: repeat(3, 1fr); }
+  .bt-pillar-grid--4 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1024px) {
+  .bt-pillar-grid--4 { grid-template-columns: repeat(4, 1fr); }
+}
+.bt-pillar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.bt-pillar-num {
+  font-family: var(--font-mono);
+  font-size: 1.6rem;
+  font-weight: 500;
+  color: var(--cobalto);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.bt-pillar-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--bruma-clara);
+}
+.bt-pillar-body {
+  font-size: 0.92rem;
+  color: var(--bruma);
+  line-height: 1.65;
+}
+.bt-pillar-body strong { color: var(--bruma-clara); }
+.bt-pillar-body em { color: var(--cobalto-glow); font-style: normal; font-weight: 500; }
+
+/* ── Step card (for the 5-step guide on app.html) ─────────── */
+.bt-step-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+.bt-step {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  align-items: start;
+}
+@media (min-width: 900px) {
+  .bt-step { grid-template-columns: 1fr 1.1fr; gap: 32px; }
+  .bt-step--reverse .bt-step-copy { order: 2; }
+  .bt-step--reverse .bt-step-visual { order: 1; }
+}
+.bt-step-copy { display: flex; flex-direction: column; gap: 10px; }
+.bt-step-num {
+  font-family: var(--font-mono);
+  font-size: 2rem;
+  font-weight: 500;
+  color: var(--cobalto);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.bt-step-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--bruma-clara);
+  letter-spacing: -0.01em;
+}
+.bt-step-body {
+  font-size: 0.95rem;
+  color: var(--bruma);
+  line-height: 1.7;
+}
+.bt-step-body strong { color: var(--bruma-clara); font-weight: 600; }
+.bt-step-body code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--grafito);
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: var(--bruma-clara);
+}
+.bt-step-visual { min-width: 0; }
+
+/* ── Ecosystem cards grid ─────────────────────────────────── */
+.bt-ecosystem-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+@media (min-width: 720px) {
+  .bt-ecosystem-grid { grid-template-columns: 1fr 1fr; }
+}
+.bt-ecosystem-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--noche-profunda);
+  border: 1px solid var(--grafito);
+  border-radius: 12px;
+  padding: 28px 26px;
+  transition: border-color 0.15s, transform 0.15s;
+}
+.bt-ecosystem-card:hover {
+  border-color: var(--grafito-fuerte);
+  transform: translateY(-2px);
+}
+.bt-ecosystem-card-tag {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--bruma-terciaria);
+}
+.bt-ecosystem-card-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--bruma-clara);
+}
+.bt-ecosystem-card-body {
+  font-size: 0.9rem;
+  color: var(--bruma);
+  line-height: 1.65;
+  flex-grow: 1;
+}
+.bt-ecosystem-card-cta {
+  color: var(--cobalto);
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-top: 8px;
+}
+
+/* ── Ambassador / share block ─────────────────────────────── */
+.bt-share-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+.bt-share-toast {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--esmeralda);
+  padding-left: 4px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.bt-share-toast--visible { opacity: 1; }
+
+/* ── Contact CTA section ──────────────────────────────────── */
+.bt-contact-channels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+  margin-top: 18px;
+  font-size: 0.95rem;
+}
+.bt-contact-channel {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--bruma);
+}
+.bt-contact-channel strong { color: var(--bruma-clara); }
+.bt-contact-channel a { color: var(--cobalto); font-weight: 500; }
+
+/* ── Minimal footer ───────────────────────────────────────── */
+.bt-footer-minimal {
+  padding: 32px 24px;
+  border-top: 1px solid var(--grafito);
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--bruma-terciaria);
+}
+.bt-footer-minimal a {
+  color: var(--bruma);
+  text-decoration: none;
+  margin: 0 8px;
+}
+.bt-footer-minimal a:hover { color: var(--cobalto); }
+
+/* ── Select (for ERP dropdown in register) ────────────────── */
+.bt-select {
+  width: 100%;
+  padding: 11px 14px;
+  background: var(--nocturno);
+  border: 1.5px solid var(--grafito);
+  border-radius: var(--radius);
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: var(--bruma-clara);
+  transition: border-color 0.15s, box-shadow 0.15s;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23A8B0C2' d='M6 8 0 0h12z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+.bt-select:focus {
+  border-color: var(--cobalto);
+  box-shadow: 0 0 0 3px var(--cobalto-soft);
+}
+.bt-select option { background: var(--nocturno); color: var(--bruma-clara); }
+
+/* ── "Pasalo" block inside app.html (post-download) ───────── */
+.bt-pasalo {
+  background: linear-gradient(135deg, hsl(232 100% 65% / 0.08), hsl(232 100% 65% / 0.02));
+  border: 1px solid var(--cobalto);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+  margin-top: 22px;
+}
+.bt-pasalo-heading {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--bruma-clara);
+  margin-bottom: 6px;
+}
+.bt-pasalo-body {
+  font-size: 0.88rem;
+  color: var(--bruma);
+  line-height: 1.55;
+}
+.bt-pasalo-body strong { color: var(--cobalto-glow); }
