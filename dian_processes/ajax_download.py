@@ -1,10 +1,16 @@
 """AJAX download — descarga el ZIP de un documento llamando directo al
-endpoint backend ``GET /Document/GetFilePdf?cune=<CUFE>``.
+endpoint backend ``GET /Document/DownloadZipFiles?trackId=<CUFE>``.
 
-Aunque el endpoint se llama "GetFilePdf", devuelve un .zip con XML+PDF
-(verificado por sniff: el primer documento de prueba bajó como zip de 51 KB).
-Usar este endpoint en vez del click visual permite paralelismo masivo
-(simple HTTP GET, sin re-aplicar filtros ni clickear botones).
+Es el MISMO endpoint que usa el botón "Descargar" de la UI DIAN (verificado
+por captura de network trace). Devuelve un .zip con XML + PDF renderizado
+por DIAN (~70 KB típico). Usar este endpoint en vez del click visual
+permite paralelismo masivo (simple HTTP GET, sin re-aplicar filtros ni
+clickear botones).
+
+# BUGFIX 2026-04-23: antes usábamos /Document/GetFilePdf?cune= que devuelve
+# un ZIP estructuralmente válido pero con el PDF a 0 bytes (DIAN no genera
+# PDF para ese endpoint). Ningún cliente HTTP —ni Playwright page.request—
+# obtenía PDF poblado de /GetFilePdf. El endpoint correcto es /DownloadZipFiles.
 """
 
 from __future__ import annotations
@@ -26,7 +32,7 @@ from dian_core.utils import sanitize_filename
 CallbackT = Callable[..., None]
 OnDone = Callable[[str, bool, Optional[str]], None]
 
-DOWNLOAD_ENDPOINT = "https://catalogo-vpfe.dian.gov.co/Document/GetFilePdf?cune={cufe}"
+DOWNLOAD_ENDPOINT = "https://catalogo-vpfe.dian.gov.co/Document/DownloadZipFiles?trackId={cufe}"
 
 
 def _pick_by_fragments(meta: dict, *fragment_groups: tuple[str, ...]) -> str:
